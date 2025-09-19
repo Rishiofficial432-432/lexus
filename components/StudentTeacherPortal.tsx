@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { PortalUser, CurriculumFile } from '../types';
 import * as Portal from './portal-supabase';
@@ -61,7 +62,8 @@ const AuthScreen: React.FC<{ onLoginSuccess: (user: PortalUser) => void; onDemoL
                 setViewMode('login');
             }
         } catch (error: any) {
-            toast.error(error.message);
+            const errorMessage = error?.message || 'An unexpected authentication error occurred. Please check your credentials and try again.';
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
