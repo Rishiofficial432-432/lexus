@@ -1,0 +1,493 @@
+
+/*
+-- =================================================================
+-- MANDATORY SUPABASE PORTAL SCHEMA SETUP
+-- =================================================================
+-- Instructions:
+-- 1. Create a new project on Supabase.io.
+-- 2. Go to your project's dashboard.
+-- 3. **IMPORTANT: Disable Email Confirmation.**
+--    - Go to Authentication -> Providers.
+--    - Find the "Email" provider and click to expand it.
+--    - Turn OFF the toggle for "Confirm email".
+--    - Click Save.
+--    - (This prevents the "Invalid login credentials" error for new users).
+-- 4. Navigate to the "SQL Editor" in the left sidebar.
+-- 5. Click "+ New query".
+-- 6. Copy the ENTIRE script below and paste it into the editor.
+-- 7. Click "RUN".
+--
+-- This script will create all the necessary tables and functions
+-- for the Student/Teacher Portal to work correctly.
+-- =================================================================
+
+-- Table: portal_users
+-- Stores profiles for students and teachers.
+CREATE TABLE IF NOT EXISTS public.portal_users (
+    id uuid DEFAULT auth.uid() PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    name text NOT NULL,
+    email text UNIQUE,
+    role text DEFAULT 'student'::text NOT NULL,
+    enrollment_id text UNIQUE,
+    ug_number text,
+    phone_number text,
+    approved boolean DEFAULT false NOT NULL
+);
+COMMENT ON TABLE public.portal_users IS 'Stores user profiles for students and teachers.';
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.portal_users ENABLE ROW LEVEL SECURITY;
+
+-- Policies for portal_users
+-- Allow users to view their own profile.
+CREATE POLICY "Allow individual read access" ON public.portal_users FOR SELECT USING (auth.uid() = id);
+-- Allow users to update their own profile.
+CREATE POLICY "Allow individual update access" ON public.portal_users FOR UPDATE USING (auth.uid() = id);
+-- Allow authenticated users to see other users for portal functionality.
+CREATE POLICY "Allow authenticated users to read user data" ON public.portal_users FOR SELECT TO authenticated USING (true);
+-- Allow teachers to update any user profile (for approving students).
+CREATE POLICY "Allow teachers to update user profiles" ON public.portal_users FOR UPDATE USING ((SELECT role FROM public.portal_users WHERE id = auth.uid()) = 'teacher');
+
+-- This function and trigger automatically creates a user profile upon signup.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  insert into public.portal_users (id, name, email, role, enrollment_id, ug_number, phone_number, approved)
+  values (
+    new.id, 
+    new.raw_user_meta_data ->> 'name', 
+    new.email, 
+    new.raw_user_meta_data ->> 'role',
+    new.raw_user_meta_data ->> 'enrollment_id',
+    new.raw_user_meta_data ->> 'ug_number',
+    new.raw_user_meta_data ->> 'phone_number',
+    -- Teachers are approved by default. The specific demo student is also auto-approved.
+    (
+      (new.raw_user_meta_data ->> 'role') = 'teacher' OR
+      new.email = 'a.johnson@university.edu'
+    )
+  );
+  return new;
+end;
+$$;
+
+
+-- Trigger to execute the function after a new user signs up
+create or replace trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+
+-- Table: portal_sessions
+-- Stores attendance sessions created by teachers.
+CREATE TABLE IF NOT EXISTS public.portal_sessions (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    expires_at timestamp with time zone NOT NULL,
+    teacher_id uuid NOT NULL REFERENCES public.portal_users(id) ON DELETE CASCADE,
+    is_active boolean DEFAULT true NOT NULL,
+    session_code text UNIQUE,
+    location_enforced boolean default false,
+    radius integer DEFAULT 100,
+    location jsonb
+);
+COMMENT ON TABLE public.portal_sessions IS 'Stores attendance sessions created by teachers.';
+
+-- Enable RLS for portal_sessions
+ALTER TABLE public.portal_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Policies for portal_sessions
+-- Teachers can create sessions for themselves.
+CREATE POLICY "Allow teachers to create sessions" ON public.portal_sessions FOR INSERT TO authenticated WITH CHECK (auth.uid() = teacher_id);
+-- Any authenticated user can view active sessions (needed for students to check in).
+CREATE POLICY "Allow authenticated users to view active sessions" ON public.portal_sessions FOR SELECT TO authenticated USING (is_active = true);
+-- Teachers can update their own sessions (e.g., to end them).
+CREATE POLICY "Allow teachers to update their own sessions" ON public.portal_sessions FOR UPDATE TO authenticated USING (auth.uid() = teacher_id);
+
+
+-- Table: portal_attendance
+-- Logs student check-ins for each session.
+CREATE TABLE IF NOT EXISTS public.portal_attendance (
+    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    student_id uuid NOT NULL REFERENCES public.portal_users(id) ON DELETE CASCADE,
+    session_id uuid NOT NULL REFERENCES public.portal_sessions(id) ON DELETE CASCADE,
+    student_name text,
+    enrollment_id text,
+    CONSTRAINT portal_attendance_student_session_unique UNIQUE (student_id, session_id)
+);
+COMMENT ON TABLE public.portal_attendance IS 'Logs student check-ins for each session.';
+
+-- Enable RLS for portal_attendance
+ALTER TABLE public.portal_attendance ENABLE ROW LEVEL SECURITY;
+
+-- Policies for portal_attendance
+-- Students can add themselves to an attendance log.
+CREATE POLICY "Allow students to insert their own attendance" ON public.portal_attendance FOR INSERT TO authenticated WITH CHECK (auth.uid() = student_id);
+-- Teachers can view all attendance records for their sessions.
+CREATE POLICY "Allow teachers to view attendance for their sessions" ON public.portal_attendance FOR SELECT TO authenticated USING (
+    EXISTS (
+        SELECT 1
+        FROM portal_sessions
+        WHERE portal_sessions.id = portal_attendance.session_id AND portal_sessions.teacher_id = auth.uid()
+    )
+);
+-- Students can view their own attendance records.
+CREATE POLICY "Allow students to view their own attendance" ON public.portal_attendance FOR SELECT TO authenticated USING (auth.uid() = student_id);
+
+-- Table: curriculum_files
+-- Stores metadata about uploaded curriculum files.
+CREATE TABLE IF NOT EXISTS public.curriculum_files (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    teacher_id uuid NOT NULL REFERENCES public.portal_users(id) ON DELETE CASCADE,
+    teacher_name text,
+    file_name text NOT NULL,
+    file_type text,
+    storage_path text NOT NULL UNIQUE
+);
+COMMENT ON TABLE public.curriculum_files IS 'Stores metadata for curriculum files linked to Supabase Storage.';
+
+-- Enable RLS for curriculum_files
+ALTER TABLE public.curriculum_files ENABLE ROW LEVEL SECURITY;
+
+-- Policies for curriculum_files
+CREATE POLICY "Allow authenticated read access" ON public.curriculum_files FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow teachers to insert files" ON public.curriculum_files FOR INSERT TO authenticated WITH CHECK (auth.uid() = teacher_id);
+CREATE POLICY "Allow teachers to delete their own files" ON public.curriculum_files FOR DELETE TO authenticated USING (auth.uid() = teacher_id);
+
+-- Storage Bucket: curriculum_uploads
+-- Create a bucket named 'curriculum_uploads' in the Supabase Storage UI.
+-- Set it to be a PUBLIC bucket if you want easy access, or private and use the policies below.
+-- The following policies assume a private bucket.
+
+-- Policies for storage.objects (curriculum_uploads bucket)
+CREATE POLICY "Allow authenticated read access" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'curriculum_uploads');
+CREATE POLICY "Allow teachers to upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK ((bucket_id = 'curriculum_uploads') AND (SELECT role FROM public.portal_users WHERE id = auth.uid()) = 'teacher');
+CREATE POLICY "Allow teachers to delete their files" ON storage.objects FOR DELETE TO authenticated USING ((bucket_id = 'curriculum_uploads') AND owner = auth.uid());
+
+*/
+
+
+
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+// Define database types for Supabase to enable type safety
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+// FIX: Updated the Database interface to be in sync with the SQL schema.
+// This adds the curriculum_files table and includes missing fields in portal_users.
+export interface Database {
+  public: {
+    Tables: {
+      curriculum_files: {
+        Row: {
+          id: string
+          created_at: string
+          teacher_id: string
+          teacher_name: string | null
+          file_name: string
+          file_type: string | null
+          storage_path: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          teacher_id: string
+          teacher_name?: string | null
+          file_name: string
+          file_type?: string | null
+          storage_path: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          teacher_id?: string
+          teacher_name?: string | null
+          file_name?: string
+          file_type?: string | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_files_teacher_id_fkey"
+            columns: ["teacher_id"]
+            referencedRelation: "portal_users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      portal_attendance: {
+        Row: {
+          created_at: string
+          enrollment_id: string | null
+          id: number
+          session_id: string
+          student_id: string
+          student_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          enrollment_id?: string | null
+          id?: number
+          session_id: string
+          student_id: string
+          student_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          enrollment_id?: string | null
+          id?: number
+          session_id?: string
+          student_id?: string
+          student_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_attendance_session_id_fkey"
+            columns: ["session_id"]
+            referencedRelation: "portal_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_attendance_student_id_fkey"
+            columns: ["student_id"]
+            referencedRelation: "portal_users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      portal_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          location: Json | null
+          location_enforced: boolean
+          radius: number | null
+          session_code: string | null
+          teacher_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_active?: boolean
+          location?: Json | null
+          location_enforced?: boolean
+          radius?: number | null
+          session_code?: string | null
+          teacher_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          location?: Json | null
+          location_enforced?: boolean
+          radius?: number | null
+          session_code?: string | null
+          teacher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_sessions_teacher_id_fkey"
+            columns: ["teacher_id"]
+            referencedRelation: "portal_users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      portal_users: {
+        Row: {
+          approved: boolean
+          created_at: string
+          email: string | null
+          enrollment_id: string | null
+          id: string
+          name: string
+          phone_number: string | null
+          role: string
+          ug_number: string | null
+        }
+        Insert: {
+          approved?: boolean
+          created_at?: string
+          email?: string | null
+          enrollment_id?: string | null
+          id?: string
+          name: string
+          phone_number?: string | null
+          role?: string
+          ug_number?: string | null
+        }
+        Update: {
+          approved?: boolean
+          created_at?: string
+          email?: string | null
+          enrollment_id?: string | null
+          id?: string
+          name?: string
+          phone_number?: string | null
+          role?: string
+          ug_number?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+// --- Supabase Configuration using localStorage ---
+const DEFAULT_SUPABASE_URL = "https://ytnvbxtblwcwrcqdbjjd.supabase.co";
+const DEFAULT_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0bnZieHRibHdjd3JjcWRiampkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY4NzkxMTcsImV4cCI6MjAzMjQ1NTExN30.2g6g2K7g15s3sN46o5m_3I3F5qMsoS_N15_34H21t4s";
+
+
+export let supabase: SupabaseClient<Database> | null = null;
+export let isSupabaseConfigured = false;
+export let connectionStatus = { configured: false, message: "Supabase credentials not configured. Please add them in Settings." };
+
+const createSupabaseClient = (url: string, key: string): SupabaseClient<Database> | null => {
+    if (!url || !url.trim() || !key || !key.trim()) {
+        isSupabaseConfigured = false;
+        connectionStatus = { configured: false, message: "Supabase credentials cannot be empty." };
+        return null;
+    }
+
+    try {
+        const client = createClient<Database>(url, key);
+        isSupabaseConfigured = true;
+        return client;
+    } catch (e) {
+        console.error("Critical error creating Supabase client:", e);
+        isSupabaseConfigured = false;
+        connectionStatus = { configured: false, message: "Error: Could not create Supabase client. The URL might be invalid." };
+        return null;
+    }
+};
+
+export const updateSupabaseCredentials = async (url: string, key: string): Promise<{ success: boolean; message: string }> => {
+    const trimmedUrl = url.trim();
+    const trimmedKey = key.trim();
+
+    if (!trimmedUrl || !trimmedKey) {
+        localStorage.removeItem('supabase-url');
+        localStorage.removeItem('supabase-anon-key');
+        supabase = null;
+        isSupabaseConfigured = false;
+        connectionStatus = { configured: false, message: "Credentials cleared. Portal is disabled." };
+        return { success: false, message: connectionStatus.message };
+    }
+
+    localStorage.setItem('supabase-url', trimmedUrl);
+    localStorage.setItem('supabase-anon-key', trimmedKey);
+    
+    const tempClient = createSupabaseClient(trimmedUrl, trimmedKey);
+    
+    if (!tempClient) {
+        connectionStatus = { configured: false, message: "Connection failed: The provided URL or Key is invalid." };
+        supabase = null;
+        isSupabaseConfigured = false;
+        return { success: false, message: connectionStatus.message };
+    }
+
+    try {
+        // This request will either succeed, return a PostgrestError, or throw a network error.
+        const { error } = await tempClient.from('portal_users').select('id', { count: 'exact', head: true });
+
+        // Case 1: The request succeeded, but Supabase returned a structured error.
+        if (error) {
+            console.error("Supabase API Error:", error);
+
+            // Special case: Table not found is a "successful" connection but needs a warning.
+            if (error.code === '42P01') {
+                const successMessage = "Connection successful, but 'portal_users' table not found. Please run the setup script in the Supabase SQL editor.";
+                connectionStatus = { configured: true, message: successMessage };
+                supabase = tempClient; // Still set the client
+                isSupabaseConfigured = true;
+                return { success: true, message: successMessage };
+            }
+            
+            let message = error.message;
+            if (error.details) message += ` Details: ${error.details}`;
+            if (error.hint) message += ` Hint: ${error.hint}`;
+            
+            connectionStatus = { configured: false, message: `Connection failed: ${message}` };
+            supabase = null;
+            isSupabaseConfigured = false;
+            return { success: false, message: connectionStatus.message };
+        }
+        
+        // Case 2: The request succeeded and there was no error. Perfect!
+        const successMessage = "Connection successful and credentials saved.";
+        connectionStatus = { configured: true, message: successMessage };
+        supabase = tempClient;
+        isSupabaseConfigured = true;
+        return { success: true, message: successMessage };
+
+    } catch (e: unknown) { // Case 3: The request itself failed (e.g., network, CORS).
+        console.error("Supabase Network/Fetch Error:", e);
+        
+        let errorMessage = "An unknown network or configuration error occurred.";
+        if (e instanceof Error) {
+            if (e.name === 'TypeError' && e.message.toLowerCase().includes('failed to fetch')) {
+                errorMessage = "Network Error: Failed to connect to the Supabase URL. Check your internet, verify the URL, and ensure your Supabase project's CORS settings are correct.";
+            } else {
+                errorMessage = e.message;
+            }
+        }
+        
+        connectionStatus = { configured: false, message: `Connection failed: ${errorMessage}` };
+        supabase = null;
+        isSupabaseConfigured = false;
+        return { success: false, message: connectionStatus.message };
+    }
+};
+
+export const getSupabaseCredentials = (): { url: string; key: string } => {
+    const url = localStorage.getItem('supabase-url') || '';
+    const key = localStorage.getItem('supabase-anon-key') || '';
+    return { url, key };
+};
+
+// Initial load
+const initializeSupabase = () => {
+    let { url, key } = getSupabaseCredentials();
+
+    if (!url || !key) {
+        console.log("Using default Supabase credentials.");
+        url = DEFAULT_SUPABASE_URL;
+        key = DEFAULT_SUPABASE_KEY;
+    }
+
+    supabase = createSupabaseClient(url, key);
+    if (supabase) {
+        updateSupabaseCredentials(url, key);
+    }
+};
+
+initializeSupabase();
