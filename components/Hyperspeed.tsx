@@ -1,4 +1,6 @@
 
+
+
 import React, { useEffect, useRef, FC } from 'react';
 import * as THREE from 'three';
 import { BloomEffect, EffectComposer, EffectPass, RenderPass, SMAAEffect, SMAAPreset } from 'postprocessing';
@@ -19,10 +21,10 @@ interface Colors {
   background: number;
   shoulderLines: number;
   brokenLines: number;
-  leftCars: readonly number[];
-  rightCars: readonly number[];
-  // FIX: Updated type for `sticks` to allow single color or an array of colors for consistency.
-  sticks: number | readonly number[];
+  // FIX: Removed readonly to avoid type guard issues.
+  leftCars: number[];
+  rightCars: number[];
+  sticks: number | number[];
 }
 
 interface HyperspeedOptions {
@@ -42,15 +44,16 @@ interface HyperspeedOptions {
   shoulderLinesWidthPercentage: number;
   brokenLinesWidthPercentage: number;
   brokenLinesLengthPercentage: number;
-  lightStickWidth: readonly [number, number];
-  lightStickHeight: readonly [number, number];
-  movingAwaySpeed: readonly [number, number];
-  movingCloserSpeed: readonly [number, number];
-  carLightsLength: readonly [number, number];
-  carLightsRadius: readonly [number, number];
-  carWidthPercentage: readonly [number, number];
-  carShiftX: readonly [number, number];
-  carFloorSeparation: readonly [number, number];
+  // FIX: Removed readonly to avoid type guard issues.
+  lightStickWidth: [number, number];
+  lightStickHeight: [number, number];
+  movingAwaySpeed: [number, number];
+  movingCloserSpeed: [number, number];
+  carLightsLength: [number, number];
+  carLightsRadius: [number, number];
+  carWidthPercentage: [number, number];
+  carShiftX: [number, number];
+  carFloorSeparation: [number, number];
   colors: Colors;
   isHyper?: boolean;
 }
@@ -350,8 +353,8 @@ const distortion_vertex = `
   }
 `;
 
-// FIX: Rewrote function to be more explicit for the type checker and improve readability.
-function random(base: number | readonly [number, number]): number {
+// FIX: Removed readonly from tuple type to avoid type guard issues.
+function random(base: number | [number, number]): number {
   if (Array.isArray(base)) {
     const min = base[0];
     const max = base[1];
@@ -360,8 +363,6 @@ function random(base: number | readonly [number, number]): number {
   return Math.random() * base;
 }
 
-// FIX: Simplified function signature to only accept arrays and removed redundant logic.
-// This resolves a bug where passing an array-type generic `T` would cause an incorrect return type.
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -377,16 +378,18 @@ function lerp(current: number, target: number, speed = 0.1, limit = 0.001): numb
 class CarLights {
   webgl: App;
   options: HyperspeedOptions;
-  colors: readonly number[] | THREE.Color;
-  speed: readonly [number, number];
+  // FIX: Removed readonly to avoid type guard issues.
+  colors: number[] | THREE.Color;
+  speed: [number, number];
   fade: THREE.Vector2;
   mesh!: THREE.Mesh<THREE.InstancedBufferGeometry, THREE.ShaderMaterial>;
 
   constructor(
     webgl: App,
     options: HyperspeedOptions,
-    colors: readonly number[] | THREE.Color,
-    speed: readonly [number, number],
+    // FIX: Removed readonly to avoid type guard issues.
+    colors: number[] | THREE.Color,
+    speed: [number, number],
     fade: THREE.Vector2
   ) {
     this.webgl = webgl;
@@ -411,8 +414,6 @@ class CarLights {
     const aColor: number[] = [];
 
     let colorArray: THREE.Color[];
-    // FIX: Added a type assertion to address a TypeScript type narrowing issue.
-    // The `Array.isArray` check was not correctly narrowing `this.colors` in the else branch.
     if (Array.isArray(this.colors)) {
       colorArray = this.colors.map(c => new THREE.Color(c));
     } else {
@@ -570,11 +571,12 @@ class LightsSticks {
     const aColor: number[] = [];
     const aMetrics: number[] = [];
 
+    const sticks = options.colors.sticks;
     let colorArray: THREE.Color[];
-    if (Array.isArray(options.colors.sticks)) {
-      colorArray = options.colors.sticks.map(c => new THREE.Color(c));
+    if (Array.isArray(sticks)) {
+      colorArray = sticks.map(c => new THREE.Color(c));
     } else {
-      colorArray = [new THREE.Color(options.colors.sticks)];
+      colorArray = [new THREE.Color(sticks as THREE.ColorRepresentation)];
     }
 
     for (let i = 0; i < totalSticks; i++) {
@@ -910,7 +912,7 @@ class App {
     this.scene = new THREE.Scene();
     this.scene.background = null;
 
-    const fog = new THREE.Fog(options.colors.background, options.length * 0.2, options.length * 500);
+    const fog = new THREE.Fog(options.colors.background, options.length * 0.2, options.length);
     this.scene.fog = fog;
 
     this.fogUniforms = {
@@ -1157,6 +1159,8 @@ class App {
   }
 }
 
+// FIX: Removed 'as const' to make the preset object mutable, resolving a type
+// incompatibility where a readonly array was being assigned to a mutable one.
 export const hyperspeedPresets = {
   one: {
     distortion: 'deepDistortion',
@@ -1172,7 +1176,7 @@ export const hyperspeedPresets = {
         sticks: 0x03b3c3
     }
   }
-} as const;
+};
 
 const Hyperspeed: FC<HyperspeedProps> = ({ effectOptions = {} }) => {
   const mergedOptions: Partial<HyperspeedOptions> = {

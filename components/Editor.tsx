@@ -1,10 +1,10 @@
 
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Page } from '../types';
 import CommandPalette from './AiToolbar';
-import { TrashIcon, ImageIcon, Wand2Icon } from './Icons';
 import { 
-    Mail, Music, Facebook, Instagram, Twitter, Pin, BrainCircuit, Search, MessageSquare, Zap, Sparkles
+    Mail, Music, Facebook, Instagram, Twitter, Pin, BrainCircuit, Search, MessageSquare, Zap, Sparkles, Image as ImageIcon, Trash2 as TrashIcon
 } from 'lucide-react';
 import { getBannerData, setBannerData } from './db';
 
@@ -30,10 +30,8 @@ const Banner: React.FC<BannerProps> = ({ page, onUpdatePage }) => {
         const loadBanner = async () => {
             if (page.bannerUrl) {
                 if (page.bannerUrl.startsWith('data:')) {
-                    // Handle legacy base64 URLs
                     setDisplayUrl(page.bannerUrl);
                 } else {
-                    // Fetch from IndexedDB
                     try {
                         const fileBlob = await getBannerData(page.bannerUrl);
                         if (fileBlob) {
@@ -124,9 +122,6 @@ const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
     };
 };
 
-// FIX: The component was incomplete, missing its implementation and return statement, which caused the build error.
-// The file was truncated. This completes the component with necessary logic and JSX.
-// Also, it's changed to a named export to resolve a circular dependency with App.tsx.
 export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage, onNewPage }) => {
   const [title, setTitle] = useState(page.title);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -137,8 +132,6 @@ export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage
 
   const debouncedUpdate = useDebounce(onUpdatePage, 500);
 
-  // This effect synchronizes the page prop to the DOM editor and title state.
-  // It makes the component "uncontrolled" during typing, but controlled when the page prop changes.
   useEffect(() => {
     if (editorRef.current && page.content !== editorRef.current.innerHTML) {
       editorRef.current.innerHTML = page.content;
@@ -146,15 +139,6 @@ export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage
     setTitle(page.title);
   }, [page]);
 
-
-  const externalTools = [
-    { name: 'Gmail', url: 'https://mail.google.com', icon: <Mail size={18} />, color: 'hover:text-red-500' },
-    { name: 'Spotify', url: 'https://open.spotify.com', icon: <Music size={18} />, color: 'hover:text-green-500' },
-    { name: 'Facebook', url: 'https://facebook.com', icon: <Facebook size={18} />, color: 'hover:text-blue-600' },
-    { name: 'Instagram', url: 'https://instagram.com', icon: <Instagram size={18} />, color: 'hover:text-pink-500' },
-    { name: 'Twitter', url: 'https://x.com', icon: <Twitter size={18} />, color: 'hover:text-blue-400' },
-  ];
-  
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
@@ -168,7 +152,7 @@ export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage
 
   const handleAiResult = (result: string) => {
     if (editorRef.current) {
-      editorRef.current.innerHTML = result.replace(/\n/g, '<br />'); // Basic formatting
+      editorRef.current.innerHTML = result.replace(/\n/g, '<br />');
       debouncedUpdate(page.id, { content: editorRef.current.innerHTML });
     }
   };
@@ -190,7 +174,7 @@ export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage
         const img = document.createElement('img');
         img.src = base64Image;
         img.style.maxWidth = '100%';
-        img.style.borderRadius = '8px';
+        img.style.borderRadius = 'var(--radius)';
         img.style.margin = '1rem 0';
         editorRef.current?.focus();
         document.execCommand('insertHTML', false, img.outerHTML);
@@ -239,23 +223,18 @@ export const Editor: React.FC<EditorProps> = ({ page, onUpdatePage, onDeletePage
           />
           <input type="file" ref={imageInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
       </div>
-       <footer className="px-4 sm:px-6 md:px-8 py-4 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-2">
+       <footer className="px-4 sm:px-6 md:px-8 py-4 border-t border-border/50 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-                <button onClick={() => setCommandPaletteOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-xs bg-accent text-accent-foreground rounded-md hover:bg-accent/80 transition-colors">
+                <button onClick={() => setCommandPaletteOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-xs bg-secondary text-secondary-foreground rounded-md hover:bg-accent transition-colors">
                     <Sparkles size={14}/> Ask AI
                     <kbd className="ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                        <span className="text-xs">⌘</span>K
+                        <span>⌘</span>K
                     </kbd>
                 </button>
                  {isAiLoading && <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>}
             </div>
             <div className="flex items-center gap-3">
-                {externalTools.map(tool => (
-                    <a href={tool.url} target="_blank" rel="noopener noreferrer" key={tool.name} title={tool.name} className={`text-muted-foreground transition-colors ${tool.color}`}>
-                        {tool.icon}
-                    </a>
-                ))}
-                 <button onClick={() => onDeletePage(page.id)} className="text-muted-foreground hover:text-destructive transition-colors" title="Delete Page">
+                 <button onClick={() => onDeletePage(page.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1.5 rounded-md hover:bg-destructive/10" title="Delete Page">
                     <TrashIcon className="w-4 h-4" />
                 </button>
             </div>

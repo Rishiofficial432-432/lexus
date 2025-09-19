@@ -74,7 +74,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onEnter }) => {
                     className="px-8 py-4 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-primary/30 animate-fade-in-up"
                     style={{ animationDelay: '0.7s' }}
                 >
-                    Launch App
+                    Launch Workspace
                 </button>
             </div>
              <style>{`

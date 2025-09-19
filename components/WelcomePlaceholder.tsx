@@ -78,7 +78,7 @@ export const WelcomePlaceholder: React.FC<WelcomePlaceholderProps> = ({ onNewPag
                   className="text-xl sm:text-2xl lg:text-3xl font-medium text-muted-foreground leading-tight animate-fade-in-up"
                   style={{ animationDelay: '0.2s' }}
                 >
-                    Hello. {salutation}.
+                    {salutation}.
                 </p>
                  <div className="mt-8 space-y-3 h-28 flex flex-col justify-center items-center">
                     {isLoading ? (
@@ -94,6 +94,13 @@ export const WelcomePlaceholder: React.FC<WelcomePlaceholderProps> = ({ onNewPag
                         )
                     )}
                 </div>
+                 <button 
+                    onClick={onNewPage} 
+                    className="mt-8 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-primary/30 animate-fade-in-up"
+                    style={{ animationDelay: '0.7s' }}
+                >
+                    Create your first page
+                </button>
             </div>
             <style>{`
                 @keyframes gradient-shift {

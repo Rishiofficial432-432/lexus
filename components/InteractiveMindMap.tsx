@@ -108,7 +108,7 @@ const generateMindMap = (content: string, title: string): MindMapData => {
         x: 0,
         y: 0,
         level: 0,
-        color: '#4B5563',
+        color: 'hsl(var(--primary))',
     };
     nodes.push(rootNode as MindMapNodeData);
     
@@ -125,11 +125,8 @@ const generateMindMap = (content: string, title: string): MindMapData => {
             parentStack.pop();
         }
         const parent = parentStack[parentStack.length - 1];
-
-        const pastelPalette = ['#60A5FA', '#FBBF24', '#4ADE80', '#F87171', '#A78BFA'];
-        const color = level === 1 
-            ? pastelPalette[nodes.filter(n => n.level === 1).length % pastelPalette.length] 
-            : '#374151';
+        
+        const color = level === 1 ? 'hsl(var(--secondary))' : 'hsl(var(--muted))';
 
         const newNode: Omit<MindMapNodeData, 'width' | 'height' | 'lines'> = {
             id: idCounter++,
@@ -150,43 +147,28 @@ const generateMindMap = (content: string, title: string): MindMapData => {
         Object.assign(node, { width, height, lines });
     });
 
-    // --- NEW: Smart Layout Algorithm ---
-    
-    // 1. Build a tree structure for easier traversal
     const childrenMap = new Map<number, MindMapNodeData[]>();
     nodes.forEach(node => {
         if (node.parentId !== undefined) {
-            if (!childrenMap.has(node.parentId)) {
-                childrenMap.set(node.parentId, []);
-            }
+            if (!childrenMap.has(node.parentId)) childrenMap.set(node.parentId, []);
             childrenMap.get(node.parentId)!.push(node);
         }
     });
 
-    // 2. First Pass (bottom-up): Calculate subtree angular width for each node
     const subtreeAngles = new Map<number, number>();
-    const minAngle = 0.2; // Minimum radians for a leaf node
+    const minAngle = 0.2; 
 
     function calculateSubtreeAngle(nodeId: number): number {
-        if (subtreeAngles.has(nodeId)) {
-            return subtreeAngles.get(nodeId)!;
-        }
-
+        if (subtreeAngles.has(nodeId)) return subtreeAngles.get(nodeId)!;
         const children = childrenMap.get(nodeId) || [];
         if (children.length === 0) {
             const node = nodes.find(n => n.id === nodeId)!;
-            // Leaf node angle is based on its size to prevent overlap
             const angle = Math.max(minAngle, (node.width / 250));
             subtreeAngles.set(nodeId, angle);
             return angle;
         }
 
-        let totalAngle = 0;
-        for (const child of children) {
-            totalAngle += calculateSubtreeAngle(child.id);
-        }
-
-        // Add some padding between subtrees
+        let totalAngle = children.reduce((sum, child) => sum + calculateSubtreeAngle(child.id), 0);
         totalAngle += (children.length - 1) * 0.05;
         subtreeAngles.set(nodeId, totalAngle);
         return totalAngle;
@@ -194,14 +176,10 @@ const generateMindMap = (content: string, title: string): MindMapData => {
 
     calculateSubtreeAngle(0);
 
-    // 3. Second Pass (top-down): Position nodes
     function positionNodesRecursive(nodeId: number, startAngle: number, endAngle: number) {
         const children = childrenMap.get(nodeId) || [];
         if (children.length === 0) return;
-
         const parentNode = nodes.find(n => n.id === nodeId)!;
-        
-        // Use the pre-calculated total angle, but scale it to the available angular slice
         const totalSubtreeAngle = Math.max(subtreeAngles.get(nodeId)!, 0.1);
         const availableAngle = endAngle - startAngle;
         let currentAngle = startAngle;
@@ -210,13 +188,9 @@ const generateMindMap = (content: string, title: string): MindMapData => {
             const childSubtreeAngle = subtreeAngles.get(child.id)!;
             const angleSlice = (childSubtreeAngle / totalSubtreeAngle) * availableAngle;
             const angle = currentAngle + angleSlice / 2;
-
-            // Radius increases with level and accounts for node sizes to prevent overlap
             const radius = (parentNode.level * 120) + Math.max(parentNode.width, parentNode.height) / 2 + Math.max(child.width, child.height) / 2 + 50;
-
             child.x = parentNode.x + Math.cos(angle) * radius;
             child.y = parentNode.y + Math.sin(angle) * radius;
-
             positionNodesRecursive(child.id, currentAngle, currentAngle + angleSlice);
             currentAngle += angleSlice;
         }
@@ -225,24 +199,17 @@ const generateMindMap = (content: string, title: string): MindMapData => {
     const rootNodeLayout = nodes.find(n => n.id === 0)!;
     rootNodeLayout.x = 0;
     rootNodeLayout.y = 0;
-    // If the total angle is less than a full circle, use a full circle to spread out direct children
     const rootTotalAngle = subtreeAngles.get(0) || 2 * Math.PI;
     const totalAngleForRoot = Math.max(rootTotalAngle, 2 * Math.PI);
     positionNodesRecursive(0, 0, totalAngleForRoot);
 
-    // 4. Center the entire mind map
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     nodes.forEach(node => {
-        const nodeMinX = node.x - node.width / 2;
-        const nodeMaxX = node.x + node.width / 2;
-        const nodeMinY = node.y - node.height / 2;
-        const nodeMaxY = node.y + node.height / 2;
-        if (nodeMinX < minX) minX = nodeMinX;
-        if (nodeMaxX > maxX) maxX = nodeMaxX;
-        if (nodeMinY < minY) minY = nodeMinY;
-        if (nodeMaxY > maxY) maxY = nodeMaxY;
+        minX = Math.min(minX, node.x - node.width / 2);
+        maxX = Math.max(maxX, node.x + node.width / 2);
+        minY = Math.min(minY, node.y - node.height / 2);
+        maxY = Math.max(maxY, node.y + node.height / 2);
     });
-
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
@@ -250,7 +217,6 @@ const generateMindMap = (content: string, title: string): MindMapData => {
         node.x -= centerX;
         node.y -= centerY;
     });
-    // --- END: Smart Layout Algorithm ---
 
     return { nodes, connections, title };
 };
@@ -462,7 +428,7 @@ const InteractiveMindMap: React.FC = () => {
         const y = parentNode.y + Math.sin(angle) * radius;
 
         const newNode: MindMapNodeData = {
-            id: newId, text, x, y, level: parentNode.level + 1, color: '#374151',
+            id: newId, text, x, y, level: parentNode.level + 1, color: 'hsl(var(--muted))',
             parentId: parentNode.id, width, height, lines
         };
         const newConnection: MindMapConnection = { from: parentNode.id, to: newId };
@@ -472,7 +438,7 @@ const InteractiveMindMap: React.FC = () => {
             nodes: [...prev!.nodes, newNode],
             connections: [...prev!.connections, newConnection]
         }));
-        setSelectedNode(newNode); // Select new node for easy chaining
+        setSelectedNode(newNode);
     };
 
     const handleColorChange = (color: string) => {
@@ -549,153 +515,150 @@ const InteractiveMindMap: React.FC = () => {
         setDraggingNode(null);
     };
 
-    const getConnectionPath = (fromNode: MindMapNodeData, toNode: MindMapNodeData) => {
-        return `M ${fromNode.x},${fromNode.y} C ${fromNode.x},${(fromNode.y + toNode.y) / 2} ${toNode.x},${(fromNode.y + toNode.y) / 2} ${toNode.x},${toNode.y}`;
-    };
-
     return (
-        <div className="flex-1 flex flex-col h-full bg-background text-foreground overflow-hidden">
-            <header className="p-3 border-b border-border flex items-center justify-between flex-shrink-0">
-                <div className="flex items-center gap-3">
-                    <FileText className="w-6 h-6 text-primary"/>
-                    <div>
-                        <h1 className="text-lg font-bold">DocuMind</h1>
-                        <p className="text-xs text-muted-foreground -mt-1">{documentFile?.name || "Upload a document to start"}</p>
-                    </div>
-                </div>
+        <div className="flex-1 flex flex-col h-full bg-accent/20 text-foreground relative overflow-hidden">
+            <header className="p-4 border-b border-border/50 bg-card/80 backdrop-blur-sm flex items-center justify-between flex-shrink-0 z-10">
+                <h1 className="text-xl font-bold flex items-center gap-3"><BrainCircuit /> VisualMind Explorer</h1>
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center bg-secondary rounded-md p-1">
-                        <button onClick={() => setZoom(z => Math.min(5, z + 0.2))} className="p-1.5 hover:bg-accent rounded-md"><ZoomIn size={16}/></button>
-                        <button onClick={resetView} className="p-1.5 hover:bg-accent rounded-md"><RotateCcw size={16}/></button>
-                        <button onClick={() => setZoom(z => Math.max(0.1, z - 0.2))} className="p-1.5 hover:bg-accent rounded-md"><ZoomOut size={16}/></button>
-                    </div>
-                    <label className="flex items-center gap-2 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 cursor-pointer transition-colors active:scale-95">
-                        <Upload size={16} />
-                        <span>Upload File</span>
-                        <input type="file" className="hidden" onChange={handleFileUpload} accept=".txt,.md,.pdf,.doc,.docx,.ppt,.pptx" />
+                    <input type="file" id="doc-upload" className="hidden" onChange={handleFileUpload} accept=".pdf,.txt,.md,.docx,.doc,.pptx,.ppt" />
+                    <label htmlFor="doc-upload" className="flex items-center gap-2 px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 cursor-pointer">
+                        <Upload size={16} /> Upload Document
                     </label>
                 </div>
             </header>
-            <div className="flex-1 flex min-h-0">
-                <main className="flex-1 relative bg-grid-pattern">
-                    {isProcessing ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm z-10">
-                            <Loader className="w-8 h-8 text-primary animate-spin" />
-                            <p className="mt-4 text-lg">Analyzing document...</p>
-                        </div>
-                    ) : !mindMapData ? (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center p-8 bg-card/80 border border-border rounded-lg shadow-xl max-w-lg">
-                                <BrainCircuit size={48} className="mx-auto text-primary mb-4"/>
-                                <h2 className="text-2xl font-bold">Visualize Your Documents</h2>
-                                <p className="text-muted-foreground mt-2">Upload a document (.txt, .md, .pdf, .docx, .pptx) to automatically generate an interactive mind map and explore its structure.</p>
-                            </div>
-                        </div>
-                    ) : (
+    
+            <main className="flex-1 flex relative">
+                {isProcessing ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm z-20">
+                        <Loader className="w-12 h-12 animate-spin text-primary mb-4" />
+                        <p className="text-lg font-semibold">Analyzing Document...</p>
+                        <p className="text-muted-foreground">{documentFile?.name}</p>
+                    </div>
+                ) : !mindMapData ? (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                        <FileText size={48} className="text-muted-foreground mb-4" />
+                        <h2 className="text-2xl font-bold">Visualize Your Knowledge</h2>
+                        <p className="text-muted-foreground mt-2 max-w-md">Upload a document (.txt, .pdf, .docx) to automatically generate an interactive mind map of its contents.</p>
+                    </div>
+                ) : (
+                    <>
                         <svg
                             ref={svgRef}
-                            className="w-full h-full cursor-grab active:cursor-grabbing"
+                            className="flex-1 w-full h-full cursor-grab active:cursor-grabbing"
                             viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width / zoom} ${viewBox.height / zoom}`}
-                            onWheel={handleWheel}
                             onMouseDown={handleMouseDown}
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
+                            onWheel={handleWheel}
                         >
                             <g>
                                 {mindMapData.connections.map(conn => {
                                     const fromNode = mindMapData.nodes.find(n => n.id === conn.from);
                                     const toNode = mindMapData.nodes.find(n => n.id === conn.to);
                                     if (!fromNode || !toNode) return null;
-                                    return (
-                                        <path
-                                            key={`${conn.from}-${conn.to}`}
-                                            d={getConnectionPath(fromNode, toNode)}
-                                            stroke="#4B5563"
-                                            strokeWidth="2"
-                                            fill="none"
-                                        />
-                                    );
+                                    const path = `M ${fromNode.x} ${fromNode.y} Q ${fromNode.x} ${toNode.y}, ${toNode.x} ${toNode.y}`;
+                                    return <path key={`${conn.from}-${conn.to}`} d={path} stroke="hsl(var(--border))" strokeWidth="1.5" fill="none" />;
                                 })}
+                            </g>
+                            <g>
                                 {mindMapData.nodes.map(node => (
-                                   (editingNodeId === node.id) ? (
-                                        <foreignObject 
-                                            key={`edit-${node.id}`} 
-                                            x={node.x - node.width / 2} 
-                                            y={node.y - node.height / 2}
+                                    <g
+                                        key={node.id}
+                                        transform={`translate(${node.x - node.width / 2}, ${node.y - node.height / 2})`}
+                                        onClick={() => handleNodeClick(node)}
+                                        onDoubleClick={() => handleNodeDoubleClick(node)}
+                                        onMouseDown={(e) => handleNodeMouseDown(e, node)}
+                                        className="cursor-pointer"
+                                    >
+                                        <rect
                                             width={node.width}
                                             height={node.height}
-                                            style={{ overflow: 'visible' }}
-                                        >
-                                            <textarea
-                                                value={tempNodeText}
-                                                onChange={e => setTempNodeText(e.target.value)}
-                                                onBlur={handleNodeTextSave}
-                                                onKeyDown={e => {
-                                                    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleNodeTextSave(); }
-                                                    if (e.key === 'Escape') { setEditingNodeId(null); }
-                                                }}
-                                                autoFocus
-                                                style={{
-                                                    width: '100%', height: '100%', border: '2px solid #A78BFA', borderRadius: '8px',
-                                                    background: node.color, color: 'white', textAlign: 'center', fontSize: '14px',
-                                                    fontWeight: 500, padding: '6px', resize: 'none', outline: 'none',
-                                                    fontFamily: 'inherit', lineHeight: '1.2', overflowY: 'hidden'
-                                                }}
-                                            />
-                                        </foreignObject>
-                                    ) : (
-                                        <g key={node.id} transform={`translate(${node.x - node.width / 2}, ${node.y - node.height / 2})`} className="cursor-pointer" onMouseDown={(e) => handleNodeMouseDown(e, node)} onClick={() => handleNodeClick(node)} onDoubleClick={() => handleNodeDoubleClick(node)}>
-                                            <title>Double-click to edit</title>
-                                            <rect width={node.width} height={node.height} rx="8" fill={node.color} stroke={selectedNode?.id === node.id ? '#A78BFA' : '#1F2937'} strokeWidth="3" />
-                                            <text x={node.width/2} y={node.height/2 - (node.lines.length-1)*18/2} dy=".3em" textAnchor="middle" fontSize="14px" fontWeight="500" fill="white" className="select-none" style={{ pointerEvents: 'none' }}>
-                                                {node.lines.map((line, i) => <tspan key={i} x={node.width/2} dy={i > 0 ? '1.2em' : 0}>{line}</tspan>)}
-                                            </text>
-                                        </g>
-                                    )
+                                            rx="8"
+                                            fill={node.color}
+                                            stroke={selectedNode?.id === node.id ? 'hsl(var(--primary))' : 'hsl(var(--border))'}
+                                            strokeWidth={selectedNode?.id === node.id ? 2 : 1.5}
+                                        />
+                                        {editingNodeId === node.id ? (
+                                            <foreignObject x="4" y="4" width={node.width - 8} height={node.height - 8}>
+                                                <input
+                                                    type="text"
+                                                    value={tempNodeText}
+                                                    onChange={e => setTempNodeText(e.target.value)}
+                                                    onBlur={handleNodeTextSave}
+                                                    onKeyDown={e => e.key === 'Enter' && handleNodeTextSave()}
+                                                    autoFocus
+                                                    style={{
+                                                        width: '100%', height: '100%',
+                                                        border: 'none', background: 'transparent',
+                                                        textAlign: 'center', color: 'hsl(var(--primary-foreground))',
+                                                        outline: 'none', fontSize: '14px',
+                                                    }}
+                                                    onClick={e => e.stopPropagation()} // Prevent node click
+                                                />
+                                            </foreignObject>
+                                        ) : (
+                                            node.lines.map((line, i) => (
+                                                <text
+                                                    key={i}
+                                                    x={node.width / 2}
+                                                    y={12 + (i + 0.5) * 18}
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
+                                                    fill={node.level === 0 ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground))'}
+                                                    fontSize="14"
+                                                    fontWeight="500"
+                                                    style={{ pointerEvents: 'none' }}
+                                                >
+                                                    {line}
+                                                </text>
+                                            ))
+                                        )}
+                                    </g>
                                 ))}
                             </g>
                         </svg>
-                    )}
-                </main>
-                <aside className={`flex-shrink-0 border-l border-border transition-all duration-300 overflow-y-auto ${selectedNode ? 'w-80' : 'w-0'}`}>
-                    {selectedNode && (
-                        <div className="p-4 flex flex-col h-full">
-                             <div className="flex items-start justify-between mb-4">
-                                <h3 className="font-bold text-lg flex items-center gap-2"><BrainCircuit size={18}/> Controls &amp; AI</h3>
-                                <button onClick={() => setSelectedNode(null)} className="p-1 hover:bg-accent rounded-md"><X size={16}/></button>
-                            </div>
-                            <div className="p-3 bg-secondary rounded-md mb-4">
-                                <p className="font-semibold">{selectedNode.text}</p>
-                            </div>
-                            
-                            <div className="mb-4">
-                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground">Actions</h4>
-                                <button onClick={handleAddNode} className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-accent text-accent-foreground rounded-md hover:bg-accent/80 transition-colors active:scale-95">
+    
+                        {/* Controls */}
+                        <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                            <button onClick={() => setZoom(z => Math.min(5, z * 1.2))} className="p-2 bg-card rounded-md border border-border shadow-md hover:bg-secondary"><ZoomIn size={18} /></button>
+                            <button onClick={() => setZoom(z => Math.max(0.1, z / 1.2))} className="p-2 bg-card rounded-md border border-border shadow-md hover:bg-secondary"><ZoomOut size={18} /></button>
+                            <button onClick={resetView} className="p-2 bg-card rounded-md border border-border shadow-md hover:bg-secondary"><RotateCcw size={18} /></button>
+                        </div>
+                    </>
+                )}
+    
+                {/* Explanation Sidebar */}
+                {selectedNode && (
+                    <aside className="absolute top-0 right-0 h-full w-80 bg-card/80 backdrop-blur-sm border-l border-border/50 flex flex-col p-4 animate-slide-in-from-right">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-bold text-lg">Node Details</h3>
+                            <button onClick={() => setSelectedNode(null)} className="p-1 rounded-md hover:bg-secondary"><X size={18} /></button>
+                        </div>
+                        <div className="overflow-y-auto">
+                            <p className="font-semibold text-primary mb-2">{selectedNode.text}</p>
+    
+                            <h4 className="font-semibold text-muted-foreground mt-4 mb-2 text-sm">AI Explanation</h4>
+                            {isExplaining ? (
+                                <div className="flex items-center gap-2 text-muted-foreground"><Loader className="w-4 h-4 animate-spin"/> Generating...</div>
+                            ) : (
+                                <p className="text-sm text-foreground/90">{explanation || "Click 'Explain' to get an AI-powered summary."}</p>
+                            )}
+    
+                            <h4 className="font-semibold text-muted-foreground mt-4 mb-2 text-sm">Actions</h4>
+                            <div className="space-y-2">
+                                <button onClick={handleAddNode} className="w-full flex items-center gap-2 px-3 py-1.5 text-sm bg-secondary rounded-md hover:bg-secondary/80">
                                     <Plus size={16} /> Add Child Node
                                 </button>
-                            </div>
-
-                            <div className="mb-4">
-                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground">Node Color</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {['#60A5FA', '#FBBF24', '#4ADE80', '#F87171', '#A78BFA', '#4B5563', '#EC4899'].map(color => (
-                                        <button key={color} onClick={() => handleColorChange(color)}
-                                            className={`w-6 h-6 rounded-full transition-transform hover:scale-110 active:scale-95 ${selectedNode.color === color ? 'ring-2 ring-offset-2 ring-offset-background ring-foreground' : ''}`}
-                                            style={{ backgroundColor: color }} aria-label={`Change color to ${color}`}
-                                        />
+                                 <div className="grid grid-cols-5 gap-2 pt-2">
+                                    {['hsl(var(--primary))', 'hsl(var(--secondary))', '#4ade80', '#facc15', '#fb923c'].map(color => (
+                                        <button key={color} onClick={() => handleColorChange(color)} className="w-full h-8 rounded-md" style={{ backgroundColor: color }} />
                                     ))}
                                 </div>
                             </div>
-                            
-                            <div className="flex-1 overflow-y-auto text-sm text-foreground/90 border-t border-border pt-4 mt-2">
-                                <h4 className="font-semibold text-sm mb-2 text-muted-foreground">AI Explanation</h4>
-                                {isExplaining ? <div className="flex items-center gap-2"><Loader className="w-4 h-4 animate-spin"/> Generating...</div> : <p className="whitespace-pre-wrap leading-relaxed">{explanation}</p>}
-                            </div>
                         </div>
-                    )}
-                </aside>
-            </div>
+                    </aside>
+                )}
+            </main>
         </div>
     );
 };

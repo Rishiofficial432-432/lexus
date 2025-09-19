@@ -17,28 +17,28 @@ const FeatureItem: React.FC<{ icon: React.ReactNode; title: string; children: Re
 const AboutPage: React.FC = () => {
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
-            <Section title="About Lexus: Your Intelligent Workspace">
+            <Section title="About LEXUS: Your Intelligent Workspace">
                 <p>
-                    Lexus is your intelligent workspace, an all-in-one productivity suite combining AI-powered notes, task management, and planning tools to organize your life and amplify your creativity. It is designed from the ground up to be a single, unified hub for all your personal and professional productivity needs, eliminating the clutter and inefficiency of switching between multiple applications.
+                    LEXUS is your intelligent workspace, an all-in-one productivity suite combining AI-powered notes, task management, and planning tools to organize your life and amplify your creativity. It is designed from the ground up to be a single, unified hub for all your personal and professional productivity needs, eliminating the clutter and inefficiency of switching between multiple applications.
                 </p>
                 <p>
-                    At its core, Lexus operates on a <strong>privacy-first, local-first</strong> principle. All your data is stored securely on your own device, ensuring that you have complete ownership and control over your information.
+                    At its core, LEXUS operates on a <strong>privacy-first, local-first</strong> principle. All your data is stored securely on your own device, ensuring that you have complete ownership and control over your information.
                 </p>
             </Section>
 
-            <Section title="The Problem Lexus Solves">
+            <Section title="The Problem LEXUS Solves">
                 <p>
                     In today's digital landscape, productivity is often fragmented across a dozen different apps. This fragmentation leads to information silos, context switching that drains mental energy, lack of integration, and significant privacy concerns.
                 </p>
                 <p>
-                    Lexus addresses these challenges by providing a cohesive, intelligent, and private environment where all your productivity tools coexist and interact seamlessly.
+                    LEXUS addresses these challenges by providing a cohesive, intelligent, and private environment where all your productivity tools coexist and interact seamlessly.
                 </p>
             </Section>
             
             <Section title="Key Features: An Integrated Powerhouse">
                  <ul className="space-y-6">
                     <FeatureItem icon={<Box size={20} />} title="Over 15 Powerful Tools">
-                        Lexus integrates a comprehensive suite of features, including a rich-text editor, dashboard with widgets (Tasks, Kanban, Calendar, Pomodoro, Habits, etc.), a dedicated Journal, and an innovative mind-mapping tool.
+                        LEXUS integrates a comprehensive suite of features, including a rich-text editor, dashboard with widgets (Tasks, Kanban, Calendar, Pomodoro, Habits, etc.), a dedicated Journal, and an innovative mind-mapping tool.
                     </FeatureItem>
                      <FeatureItem icon={<BrainCircuit size={20} />} title="AI-Powered Intelligence">
                         The AI Assistant, powered by Google's Gemini model, acts as your command center. Use natural language to manage tasks, schedule events, generate content, and control the entire application with unparalleled efficiency.
@@ -46,26 +46,26 @@ const AboutPage: React.FC = () => {
                      <FeatureItem icon={<Lock size={20} />} title="Uncompromising Privacy">
                         All your data is stored 100% locally in your browser. It never leaves your device, giving you a level of security and ownership that cloud-based services cannot match. Your privacy is a feature, not an afterthought.
                     </FeatureItem>
-                     <FeatureItem icon={<FileSearch size={20} />} title="Innovative DocuMind View">
+                     <FeatureItem icon={<FileSearch size={20} />} title="Innovative VisualMind View">
                        Automatically generate interactive, explorable mind maps from your documents (.txt, .pdf, .docx, etc.). This unique tool helps you visualize and understand complex information in a new way.
                     </FeatureItem>
                      <FeatureItem icon={<Zap size={20} />} title="Zero-Friction Experience">
-                        No accounts, no sign-ups, no subscriptions. Lexus is instantly usable, removing all barriers to entry for new users to start organizing their lives immediately.
+                        No accounts, no sign-ups, no subscriptions. LEXUS is instantly usable, removing all barriers to entry for new users to start organizing their lives immediately.
                     </FeatureItem>
                 </ul>
             </Section>
 
             <Section title="Unique Selling Propositions (USPs)">
                 <ul className="list-disc pl-6 space-y-2">
-                    <li><strong>True All-in-One Integration:</strong> Lexus uniquely combines over 15 tools into a single, cohesive interface, eliminating the need for multiple apps and subscriptions.</li>
-                    <li><strong>Privacy-First Architecture:</strong> By storing all data locally, Lexus offers a level of privacy that cloud services cannot match, making it ideal for sensitive information.</li>
+                    <li><strong>True All-in-One Integration:</strong> LEXUS uniquely combines over 15 tools into a single, cohesive interface, eliminating the need for multiple apps and subscriptions.</li>
+                    <li><strong>Privacy-First Architecture:</strong> By storing all data locally, LEXUS offers a level of privacy that cloud services cannot match, making it ideal for sensitive information.</li>
                     <li><strong>Function-Driven AI Command Center:</strong> The AI is a "do-engine," reliably executing commands across the app, making you significantly more efficient.</li>
-                    <li><strong>Innovative DocuMind Visualizer:</strong> Turns static documents into active tools for thought, a feature unique to Lexus.</li>
+                    <li><strong>Innovative VisualMind Visualizer:</strong> Turns static documents into active tools for thought, a feature unique to LEXUS.</li>
                 </ul>
             </Section>
 
             <Section title="Future Roadmap">
-                <p>To evolve from a powerful local tool into a mainstream competitor, Lexus is focused on:</p>
+                <p>To evolve from a powerful local tool into a mainstream competitor, LEXUS is focused on:</p>
                  <ul className="list-disc pl-6 space-y-2">
                     <li><strong>Optional, End-to-End Encrypted Cloud Sync:</strong> To enable secure multi-device access without compromising privacy.</li>
                     <li><strong>Enhanced Editor:</strong> Adding features like tables, callout blocks, and bi-directional linking to transform it into a true personal knowledge management system.</li>

@@ -1,4 +1,4 @@
-# Lexus: A Technical Pitch for the Future of Classroom Management & Student Engagement
+# LEXUS: A Technical Pitch for the Future of Classroom Management & Student Engagement
 
 **(Audience: Technical investors, institutional administrators, education department leaders)**
 
@@ -14,9 +14,9 @@ On the other side, we have our students. Their days are often a fractured landsc
 
 This is not just an administrative issue; it's a pedagogical one. As educational philosophies, such as the recommendations in NEP 2020, evolve towards more personalized and experiential learning, the tools we use must evolve as well. We need a system that not only streamlines administration but also transforms unstructured time into an opportunity for growth.
 
-That system is Lexus.
+That system is LEXUS.
 
-Lexus is not just another productivity app. It's a holistic educational operating system, and at its heart is the **Student/Teacher Portal**—a secure, real-time, and intelligent module designed to solve this dual problem head-on.
+LEXUS is not just another productivity app. It's a holistic educational operating system, and at its heart is the **Student/Teacher Portal**—a secure, real-time, and intelligent module designed to solve this dual problem head-on.
 
 ---
 
@@ -29,14 +29,14 @@ Our first objective is to eliminate the administrative friction that burdens edu
 The core of the problem is manual, insecure attendance. Our solution is a multi-layered, digital-first approach.
 
 **The Workflow:**
-1.  **Session Initiation:** A teacher starts class and, with a single click in their Lexus dashboard, initiates a new attendance session.
+1.  **Session Initiation:** A teacher starts class and, with a single click in their LEXUS dashboard, initiates a new attendance session.
 2.  **Secure Check-in Code:** The system instantly generates a unique, time-sensitive 6-digit code and a corresponding QR code.
 3.  **Real-Time Dashboard:** This is where the magic happens. On the teacher's screen, a live dashboard appears. As students check in using the code, their names populate the list in real-time. The teacher has an immediate, dynamic view of who is present, eliminating the need for roll calls or passing around a sheet.
 
 This workflow directly addresses the expected outcome of a real-time attendance display. But we go further by solving the critical issue of academic integrity.
 
 **Ensuring Integrity with Location-Aware Attendance:**
-The most significant flaw in traditional systems is "buddy punching"—a student signing in for an absent friend. The Lexus Portal solves this with an optional **Location-Aware (GPS) check-in**.
+The most significant flaw in traditional systems is "buddy punching"—a student signing in for an absent friend. The LEXUS Portal solves this with an optional **Location-Aware (GPS) check-in**.
 
 *   **How it Works:** When a teacher enables this feature, the session is geo-tagged with their current location. When a student attempts to check in, the app mandatorily requests their device's GPS coordinates.
 *   **The Verification:** We use the **Haversine formula** client-side to calculate the great-circle distance between the teacher and the student. If the student is outside a predefined radius—say, 100 meters—the check-in is rejected, even if they have the correct code.
@@ -62,13 +62,13 @@ For students, the portal is more than just a check-in tool. It’s the gateway t
 
 ### Transforming Free Periods with Personalized Tasks
 
-This is where Lexus moves beyond administration and into personal development. The app is designed to answer the question: "I have a free hour, what should I do?"
+This is where LEXUS moves beyond administration and into personal development. The app is designed to answer the question: "I have a free hour, what should I do?"
 
-*   **Personalized Goal Setting:** A student uses Lexus's dashboard to set their long-term academic and personal goals—"Complete research for history thesis," "Learn Python for data analysis," "Prepare for campus interviews."
-*   **AI-Powered Daily Routine Generation:** The Lexus AI Assistant can be prompted to generate a daily routine that intelligently combines the student's official class schedule with their long-term goals.
+*   **Personalized Goal Setting:** A student uses LEXUS's dashboard to set their long-term academic and personal goals—"Complete research for history thesis," "Learn Python for data analysis," "Prepare for campus interviews."
+*   **AI-Powered Daily Routine Generation:** The LEXUS AI Assistant can be prompted to generate a daily routine that intelligently combines the student's official class schedule with their long-term goals.
 *   **Context-Aware Task Suggestions:** During a free period, the AI can proactively suggest personalized tasks. For example: *"You have a 90-minute break. This would be a good time to work on your goal 'Complete research for history thesis.' I can help you create a plan to outline the first chapter."*
 
-This feature directly addresses the expected outcome of suggesting personalized academic tasks and generating a daily routine, turning Lexus into a proactive partner in the student's education.
+This feature directly addresses the expected outcome of suggesting personalized academic tasks and generating a daily routine, turning LEXUS into a proactive partner in the student's education.
 
 ---
 
@@ -89,193 +89,10 @@ This hybrid architecture gives us the best of both worlds: uncompromising privac
 
 ## Conclusion: A New Educational Paradigm
 
-Lexus's Student/Teacher Portal is more than just an attendance tool. It is a comprehensive solution designed for the future of education.
+LEXUS's Student/Teacher Portal is more than just an attendance tool. It is a comprehensive solution designed for the future of education.
 
 By automating administrative tasks, we give teachers back their most valuable asset: time. By providing secure, verifiable attendance, we provide administrators with data they can trust. And by integrating personalized development tools, we empower students to take ownership of their education and turn every moment on campus into an opportunity for growth.
 
 We are creating a more efficient, engaging, and data-driven learning environment for everyone. We are building the operational backbone for the modern educational institution.
 
 Thank you.
-
----
----
-
-# Lexus: In-Depth Technical Explanations
-
-This section provides a detailed, precise explanation of each feature within the Lexus application, breaking down the core logic and algorithms that power them.
-
-## The Dashboard & Core Widgets (Tasks, Kanban, etc.)
-
-### 1. Concept & Purpose
-
-The **Dashboard** is the user's daily command center. It's not a single feature but an aggregation of smaller, modular "widgets" that provide at-a-glance information and quick access to core functionalities. This includes **Tasks**, **Kanban Board**, **Calendar**, **Quick Notes**, **Habit Tracker**, and the **Personal Suite**.
-
-### 2. Core Logic: CRUD and State Management
-
-The underlying logic for most dashboard widgets is a classic **CRUD** (Create, Read, Update, Delete) operation model, managed locally within the user's browser.
-
-**Data Structure (Example: Task):**
-```typescript
-interface Task {
-  id: string; // Unique ID generated by crypto.randomUUID()
-  text: string;
-  completed: boolean;
-  createdAt: string; // ISO 8601 timestamp
-}
-```
-
-**Algorithm (Example: Toggling a Task):**
-1.  **Event Trigger:** User clicks the checkbox next to a task item in the UI.
-2.  **Identify Target:** The `onClick` handler receives the unique `id` of the task to be updated.
-3.  **State Update:** The application's state management function (`setTasks`) is called. It iterates through the existing array of tasks.
-    ```typescript
-    setTasks(currentTasks => 
-      currentTasks.map(task => 
-        task.id === targetId 
-          ? { ...task, completed: !task.completed } // Found: return a new object with the 'completed' property flipped
-          : task // Not found: return the original object
-      )
-    );
-    ```
-4.  **Persistence:** A `useEffect` hook listens for any changes to the `tasks` state. When a change is detected, it serializes the entire `tasks` array into a JSON string and saves it to the browser's `localStorage` under a key (e.g., `'lexus-tasks'`).
-5.  **UI Re-render:** React automatically re-renders the component to reflect the new state, showing the task as either checked or unchecked.
-
-### 3. Why This Approach Works
-
--   **Performance:** All operations are performed in-memory and are lightning-fast. There are no network requests.
--   **Simplicity & Reliability:** CRUD is a time-tested and robust pattern for managing data collections.
--   **Offline First:** Because the data's source of truth is `localStorage`, the entire system works perfectly without an internet connection.
-
----
-
-## AI Brain Dump Logic Explanation
-
-### 1. Concept & Purpose
-
-The **AI Brain Dump** is an intelligent parser designed to solve the problem of "chaotic input." It takes a user's unstructured, free-form text and transforms it into organized, actionable items within the Lexus ecosystem.
-
-### 2. Data Structure & Setup
-
--   **Input:** A single block of unstructured `string` from the user.
--   **Output:** A structured `JSON` object that categorizes the extracted information.
-
-```typescript
-interface BrainDumpResponse {
-    tasks?: string[];
-    events?: { title: string; date: string; time: string }[];
-    quickNotes?: string[];
-    newNotes?: { title: string; content?: string }[];
-}
-```
-
-### 3. Algorithm Flow Summary
-
-1.  **User Input:** The user provides text (e.g., *"remind me to call John tomorrow at 2pm, buy groceries, also I had a cool idea for a new blog post"*).
-2.  **Prompt Engineering:** The system constructs a detailed prompt for the Gemini AI model. This prompt is crucial and contains:
-    -   **Role Assignment:** "You are an automated text processing engine..."
-    -   **Task Definition:** "...Your sole function is to extract actionable items and categorize them..."
-    -   **Contextual Information:** The current date is injected to help the AI resolve relative terms like "tomorrow."
-    -   **The User's Text:** The input string is embedded in the prompt.
-    -   **Strict Output Formatting:** The prompt explicitly commands the AI to respond *only* with a JSON object that matches a specific schema.
-3.  **Schema Definition:** A formal `responseSchema` is created that matches the `BrainDumpResponse` interface. This schema is sent to the Gemini API along with the prompt.
-4.  **API Call:** A request is made to the `gemini-2.5-flash` model. The `config` object for this call specifies `responseMimeType: "application/json"` and includes the `responseSchema`. This forces the model to return a valid JSON object.
-5.  **Response Parsing:** The returned JSON string is parsed into a `BrainDumpResponse` object.
-6.  **User Verification UI:** The application UI displays the parsed items, grouped by category (Tasks, Events, etc.), each with a checkbox. This gives the user final control over what gets saved.
-7.  **Action Dispatching:** When the user clicks "Save," the application iterates through the checked items and calls the appropriate internal functions (`onAddTask`, `onAddEvent`, etc.) to integrate them into the main app state.
-
-### 4. Why This Approach Works
-
--   **Reliability:** Using a strict JSON schema with the Gemini API (`responseSchema`) dramatically increases the reliability of the output, preventing the AI from returning conversational text or malformed data.
--   **Efficiency:** It offloads the complex natural language processing (NLP) and entity recognition (identifying dates, times, and actions) to a powerful, pre-trained model.
--   **User Control:** The final verification step ensures the user is always in control, preventing the AI from adding unwanted items.
-
----
-
-## Student/Teacher Portal & Attendance Logic
-
-### 1. Concept & Purpose
-
-The **Portal** is a secure, real-time system for managing classroom attendance. It solves the problems of manual tracking (inefficiency) and academic dishonesty ("buddy punching") by using a cloud backend and optional location verification.
-
-### 2. Data Structure & Setup
-
-The system relies on a **Supabase** (PostgreSQL) backend with three core tables:
-
-```sql
--- Stores user profiles (both students and teachers)
-CREATE TABLE portal_users (id uuid, name text, role text, ...);
-
--- Stores sessions created by teachers
-CREATE TABLE portal_sessions (id uuid, teacher_id uuid, session_code text, is_active boolean, location jsonb, ...);
-
--- Logs each successful student check-in
-CREATE TABLE portal_attendance (id bigint, student_id uuid, session_id uuid, ...);
-```
-
-### 3. Teacher Workflow: Starting a Session
-
-1.  **User Action:** A teacher clicks "Start New Session."
-2.  **Location Check (Optional):** If the "Location-Aware" toggle is enabled:
-    -   The browser's `navigator.geolocation.getCurrentPosition()` API is called.
-    -   This prompts the teacher for location permission.
-    -   On success, the teacher's `latitude` and `longitude` are captured.
-3.  **Code Generation:** A unique 6-digit `session_code` is generated randomly. A 10-minute `expires_at` timestamp is calculated.
-4.  **Database Insert:** An `INSERT` query is sent to the `portal_sessions` table, saving the `teacher_id`, `session_code`, `expires_at` timestamp, and the optional location data.
-5.  **UI Update:** The teacher's dashboard updates to show the live session code, a QR code, and an empty list for live attendance.
-
-### 4. Student Workflow: Checking In
-
-1.  **User Action:** A student enters the 6-digit code and clicks "Check In."
-2.  **Session Validation:** An API call is made to `SELECT` from `portal_sessions` where the `session_code` matches, `is_active` is `true`, and the current time is before `expires_at`. If no row is returned, an "Invalid Code" error is shown.
-3.  **Location Verification (If Enforced):**
-    -   The student's browser is prompted for location access.
-    -   The student's `latitude` and `longitude` are retrieved.
-    -   The **Haversine formula** is executed on the client to calculate the distance in meters between the student's coordinates and the teacher's coordinates (retrieved in the previous step).
-    -   `if (distance > 100)` an error is shown ("You are too far from the class").
-4.  **Attendance Logging:** An `INSERT` query is sent to the `portal_attendance` table with the `student_id` and the `session_id`.
-    -   A `UNIQUE` constraint on `(student_id, session_id)` in the database prevents a student from checking in twice for the same session. If the insert fails due to this constraint, an "Already checked in" error is shown.
-5.  **Confirmation:** If the insert is successful, the student's UI shows a "Checked In Successfully" message.
-
-### 5. Real-Time Logic: The Live Dashboard
-
-1.  **Subscription:** When the teacher's live session dashboard loads, it uses the Supabase client library to establish a **WebSocket connection** to the database.
-2.  **Channel Listening:** The client subscribes to all `INSERT` events on the `portal_attendance` table, specifically filtered to the current `session_id`.
-3.  **Live Update:** When a student successfully checks in (Step 4 above), the database insert triggers a message to be pushed over the WebSocket to the teacher's client. The client receives this new attendance record and dynamically adds the student's name to the live list, causing the UI to update in real-time without needing a refresh.
-
----
-
-## Timetable Generation Logic Explanation
-
-### 1. Data Structure & Setup
-
-**Core Entities:** The system manages data from an Excel file, broken down into key entities:
-
-```
-Teachers (Name, Subjects[]) <-> Subjects (Name, HoursPerWeek) <-> Classes (Name, Subjects[], StudentCount) <-> Rooms (Name, Capacity)
-```
-
-**Input Structure (from Excel):**
--   **Teachers Sheet:** Rows with `TeacherName`, `SubjectsTaught` (comma-separated).
--   **Subjects Sheet:** Rows with `SubjectName`, `HoursPerWeek`.
--   **Classes Sheet:** Rows with `ClassName`, `Subjects` (comma-separated), `StudentCount`.
--   **Rooms (from UI):** A simple list of rooms and their seating capacity.
-
-### 2. Scheduling Request Generation
-
-**Step 1: Create All Required Sessions**
-The system first flattens the input data into a list of every single class period that needs to be scheduled for the week.
-
-```
-// Pseudocode
-sessionsToSchedule = [];
-for each Class in Classes:
-  for each SubjectName in Class.subjects:
-    hours = getHoursForSubject(SubjectName);
-    for i from 1 to hours:
-      sessionsToSchedule.push({ className: Class.name, subjectName: SubjectName });
-```
-This creates a master list of all ~500 individual periods that must be placed in the timetable.
-
-### 3. Conflict Prevention System (The Core Algorithm)
-
-The algorithm uses a **greedy, constraint-satisfaction approach**. It iterates through---

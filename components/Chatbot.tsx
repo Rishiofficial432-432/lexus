@@ -3,10 +3,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Tool, Part, Type, Chat } from '@google/genai';
 import { geminiAI } from './gemini';
-import { MessageCircleIcon, SendHorizonalIcon, MicIcon, MicOffIcon } from './Icons';
 import Clock from './Clock';
 import { Page } from '../types';
-import { ChevronRight, Sun, Loader } from 'lucide-react';
+import { ChevronRight, Sun, Loader, Send, Mic, MicOff, MessageCircle } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'model';
@@ -356,7 +355,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
               parts: msg.parts.map(part => ({ text: part.text as string }))
           })),
           config: {
-            systemInstruction: "You are Lexus's AI assistant. Your role is to execute specific, individual commands using the provided tools, like adding a single task or scheduling one event. You are a conversational, command-based assistant. You must not analyze or categorize large, unstructured blocks of mixed text. If a user pastes a large 'brain dump' and asks you to sort it, you must politely decline and direct them to use the dedicated 'AI Brain Dump' feature in the Dashboard. You can also engage in general conversation on any topic.",
+            systemInstruction: "You are LEXUS's AI assistant. Your role is to execute specific, individual commands using the provided tools, like adding a single task or scheduling one event. You are a conversational, command-based assistant. You must not analyze or categorize large, unstructured blocks of mixed text. If a user pastes a large 'brain dump' and asks you to sort it, you must politely decline and direct them to use the dedicated 'AI Organizer' feature in the Dashboard. You can also engage in general conversation on any topic.",
             tools
           }
         });
@@ -377,7 +376,6 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
         const currentInput = (typeof e === 'string' ? e : input).trim();
         if (!currentInput || isLoading || !chat) return;
 
-        // Stop listening if active
         if (isListening && recognitionRef.current) {
             recognitionRef.current.stop();
             setIsListening(false);
@@ -396,7 +394,6 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
                 const call = functionCalls[0];
                 let functionResponse;
 
-                // Execute the function
                 switch(call.name) {
                     case 'addGoal': functionResponse = props.onAddGoal(call.args.goalText as string); break;
                     case 'logMood': functionResponse = props.onLogMood(call.args.mood as string); break;
@@ -431,14 +428,11 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
                     default: functionResponse = `Sorry, I can't do that.`;
                 }
                 
-                // Send the result back to the model
                  const secondResult = await chat.sendMessage({ message: [{ functionResponse: { name: call.name, response: { content: functionResponse } } }] });
-
-                // Display the model's natural language response
                  const modelMessage: Message = { role: 'model', parts: [{ text: secondResult.text }] };
                  setMessages(prev => [...prev, modelMessage]);
 
-            } else { // It's a regular text response
+            } else {
                  const modelMessage: Message = { role: 'model', parts: [{ text: result.text }] };
                  setMessages(prev => [...prev, modelMessage]);
             }
@@ -459,7 +453,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
                     className="w-10 h-10 flex items-center justify-center rounded-lg bg-accent text-accent-foreground hover:bg-accent/80 transition-colors"
                     title="Expand AI Assistant"
                 >
-                    <MessageCircleIcon className="w-5 h-5" />
+                    <MessageCircle className="w-5 h-5" />
                 </button>
             </div>
         );
@@ -467,10 +461,10 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
     
     if (!geminiAI) {
         return (
-             <div className="flex flex-col h-full bg-background/50 border-t border-border/50">
+             <div className="flex flex-col h-full bg-card/50 border-l border-border/50">
                 <div className="p-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                      <div className="flex items-center gap-2">
-                        <MessageCircleIcon className="w-5 h-5 text-muted-foreground" />
+                        <MessageCircle className="w-5 h-5 text-muted-foreground" />
                         <h2 className="text-sm font-semibold text-foreground">AI Assistant</h2>
                     </div>
                      <button onClick={() => setIsCollapsed(true)} className="p-1 rounded-md hover:bg-accent text-muted-foreground" title="Collapse AI Assistant">
@@ -485,7 +479,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-background/50 border-t border-border/50">
+        <div className="flex flex-col h-full bg-card/50 border-l border-border/50">
             <style>{`
                 @keyframes pop-in {
                     from { transform: scale(0.9); opacity: 0; }
@@ -502,7 +496,7 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
             `}</style>
             <div className="p-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2">
-                    <MessageCircleIcon className="w-5 h-5 text-muted-foreground" />
+                    <MessageCircle className="w-5 h-5 text-muted-foreground" />
                     <h2 className="text-sm font-semibold text-foreground">AI Assistant</h2>
                 </div>
                 <div className="flex items-center gap-2">
@@ -519,12 +513,12 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
             <div className="flex-1 overflow-y-auto p-3 space-y-4">
                 {messages.length === 0 && (
                     <div className="flex items-start gap-2.5 animate-pop-in">
-                        <div className="w-7 h-7 rounded-full bg-primary flex-shrink-0"></div>
-                        <div className="p-3 rounded-xl max-w-xs md:max-w-sm break-words bg-accent text-accent-foreground/90 rounded-bl-none">
+                        <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center font-bold text-primary-foreground">L</div>
+                        <div className="p-3 rounded-lg max-w-xs md:max-w-sm break-words bg-secondary text-secondary-foreground/90 rounded-bl-none">
                             <p className="text-sm leading-6">Hello! I'm your AI assistant. How can I help you manage your day?</p>
                             <button 
                                 onClick={() => handleSendMessage("Give me my daily briefing")}
-                                className="mt-2 flex items-center gap-2 text-sm bg-background/50 hover:bg-background/80 px-3 py-1.5 rounded-lg transition-colors"
+                                className="mt-2 flex items-center gap-2 text-sm bg-background/50 hover:bg-accent px-3 py-1.5 rounded-lg transition-colors"
                             >
                                 <Sun size={14} />
                                 Get my daily briefing
@@ -534,11 +528,11 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
                 )}
                 {messages.map((msg, index) => (
                     <div key={index} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'justify-end' : ''} animate-pop-in`}>
-                        {msg.role === 'model' && <div className="w-7 h-7 rounded-full bg-primary flex-shrink-0"></div>}
-                        <div className={`p-3 rounded-xl max-w-xs md:max-w-sm break-words ${
+                        {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center font-bold text-primary-foreground">L</div>}
+                        <div className={`p-3 rounded-lg max-w-xs md:max-w-sm break-words ${
                             msg.role === 'user'
                                 ? 'bg-primary text-primary-foreground rounded-br-none'
-                                : 'bg-accent text-accent-foreground/90 rounded-bl-none'
+                                : 'bg-secondary text-secondary-foreground/90 rounded-bl-none'
                         }`}>
                             <p className="text-sm leading-6 whitespace-pre-wrap">{msg.parts[0]?.text}</p>
                         </div>
@@ -546,8 +540,8 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
                 ))}
                 {isLoading && (
                      <div className="flex items-start gap-2.5 animate-pop-in">
-                        <div className="w-7 h-7 rounded-full bg-primary flex-shrink-0"></div>
-                        <div className="p-3 rounded-xl rounded-bl-none bg-accent">
+                        <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center font-bold text-primary-foreground">L</div>
+                        <div className="p-3 rounded-lg rounded-bl-none bg-secondary">
                             <Loader className="w-5 h-5 text-foreground animate-spin" />
                         </div>
                     </div>
@@ -556,26 +550,27 @@ export const Chatbot: React.FC<ChatbotProps> = (props) => {
             </div>
             <div className="p-3 border-t border-border/50 flex-shrink-0">
                 <form ref={formRef} onSubmit={handleSendMessage} className="flex items-center gap-2">
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={isListening ? "Listening..." : "Ask your assistant..."}
-                        className="w-full bg-input border border-transparent focus:border-primary focus:ring-0 text-sm rounded-md px-3 py-2 text-foreground placeholder-muted-foreground focus:outline-none transition"
-                        disabled={isLoading}
-                    />
-                    <button 
-                        type="button" 
-                        onClick={handleToggleListening}
-                        disabled={!recognitionRef.current || isLoading}
-                        className={`p-2.5 rounded-md transition-colors disabled:opacity-50 relative ${isListening ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground/90 hover:bg-secondary/80'}`}
-                        aria-label={isListening ? 'Stop listening' : 'Start voice input'}
-                    >
-                         {isListening && <div className="absolute inset-0 rounded-md pulse-ring-animation"></div>}
-                        {isListening ? <MicOffIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                    </button>
-                    <button type="submit" disabled={isLoading || !input.trim()} className="p-2.5 bg-primary text-primary-foreground rounded-md disabled:bg-secondary disabled:text-muted-foreground hover:bg-primary/90 active:scale-95 transition-all">
-                        <SendHorizonalIcon className="w-4 h-4" />
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder={isListening ? "Listening..." : "Ask your assistant..."}
+                            className="w-full bg-input border border-transparent focus:border-primary focus:ring-0 text-sm rounded-md pl-3 pr-10 py-2 text-foreground placeholder-muted-foreground focus:outline-none transition"
+                            disabled={isLoading}
+                        />
+                        <button 
+                            type="button" 
+                            onClick={handleToggleListening}
+                            disabled={!recognitionRef.current || isLoading}
+                            className={`absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-md transition-colors disabled:opacity-50 ${isListening ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'}`}
+                            aria-label={isListening ? 'Stop listening' : 'Start voice input'}
+                        >
+                            {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                        </button>
+                    </div>
+                    <button type="submit" disabled={isLoading || !input.trim()} className="p-2.5 bg-primary text-primary-foreground rounded-md disabled:opacity-50 hover:bg-primary/90 active:scale-95 transition-all">
+                        <Send size={16} />
                     </button>
                 </form>
             </div>

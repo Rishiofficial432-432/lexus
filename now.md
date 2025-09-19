@@ -1,12 +1,12 @@
-# Lexus: A Deep Dive into Your Intelligent Workspace
+# LEXUS: A Deep Dive into Your Intelligent Workspace
 
-This document provides a comprehensive, top-to-bottom explanation of the Lexus application. It covers the core philosophy, the application's features, and detailed walkthroughs of each workflow, from creating a simple note to managing a classroom.
+This document provides a comprehensive, top-to-bottom explanation of the LEXUS application. It covers the core philosophy, the application's features, and detailed walkthroughs of each workflow, from creating a simple note to managing a classroom.
 
 ---
 
 ## 1. The Core Philosophy: Your Data, Your Device
 
-Before diving into the features, it's essential to understand what makes Lexus different. It is a **local-first** and **privacy-first** application.
+Before diving into the features, it's essential to understand what makes LEXUS different. It is a **local-first** and **privacy-first** application.
 
 -   **What this means for you:** All your information—every note, task, journal entry, and setting—is stored directly on your computer's hard drive, within your web browser's secure storage. Your data never leaves your device unless you explicitly use an AI feature (which sends only that specific request to Google's servers) or the Google Workspace integration.
 -   **The benefits:** You have absolute ownership and privacy. The app works perfectly offline, and there are no accounts or sign-ups required. The one exception to this is the optional Student/Teacher Portal, which requires a cloud database (Supabase) to function, but this is a self-contained module that you control.
@@ -15,9 +15,9 @@ Before diving into the features, it's essential to understand what makes Lexus d
 
 ## 2. The Main Interface: Your Three Control Panels
 
-When you launch Lexus, the interface is divided into three distinct vertical sections, designed for a clear and organized workflow.
+When you launch LEXUS, the interface is divided into three distinct vertical sections, designed for a clear and organized workflow.
 
-1.  **The Left Sidebar (Navigation):** This is how you move between the major sections of the app. You can switch between your **Notes**, the main **Dashboard**, your private **Journal**, the **DocuMind** visualizer, and other modules. When in the "Notes" view, this sidebar also lists all your created notes for quick access.
+1.  **The Left Sidebar (Navigation):** This is how you move between the major sections of the app. You can switch between your **Notes**, the main **Dashboard**, your private **Journal**, the **VisualMind** visualizer, and other modules. When in the "Notes" view, this sidebar also lists all your created notes for quick access.
 
 2.  **The Center Content Area (Your Workspace):** This is the largest section and is where you do your work. It's where you'll write in the editor, interact with your dashboard widgets, or build a mind map.
 
@@ -90,28 +90,28 @@ This is your private space for daily reflection.
 
 -   **How it Works:** When you select the "Journal" view, you see a calendar on the left and a writing area on the right. You can click on any date in the calendar to view, edit, or create an entry for that day. As you write, your entry is saved automatically. Any date on the calendar that has an entry will be marked with a small dot, giving you a visual overview of your journaling history.
 
-### The DocuMind Workflow
+### The VisualMind Workflow
 
 This feature turns static documents into dynamic, interactive mind maps.
 
 *   **Example Scenario:** You have a dense, 20-page research paper in PDF format that you need to understand for an exam.
-*   **Your Action:** You select the "DocuMind" view and upload the PDF file.
-*   **The Result:** Lexus processes the document and generates a visual mind map. The paper's title becomes the central node. Major sections ("Introduction," "Methodology") become the main branches, and sub-headings become smaller branches connected to them.
+*   **Your Action:** You select the "VisualMind" view and upload the PDF file.
+*   **The Result:** LEXUS processes the document and generates a visual mind map. The paper's title becomes the central node. Major sections ("Introduction," "Methodology") become the main branches, and sub-headings become smaller branches connected to them.
 *   **Interaction:** You can pan, zoom, and drag the nodes to reorganize the map. If you click on a specific node (e.g., "Data Analysis"), the AI Assistant sidebar will provide a concise explanation of that concept based on the information within your uploaded document.
 
 ### Google Workspace Integration Workflow
 
 Securely bring in content from your Google Drive.
 
-*   **Connecting Your Account:** You navigate to the "Workspace" view and click "Sign in with Google." You'll be prompted to grant Lexus read-only permission for your Google Drive files. This is a secure process, and Lexus can only view, not edit, your files.
+*   **Connecting Your Account:** You navigate to the "Workspace" view and click "Sign in with Google." You'll be prompted to grant LEXUS read-only permission for your Google Drive files. This is a secure process, and LEXUS can only view, not edit, your files.
 *   **Importing a Document:** Once connected, you can search your Drive. You find a Google Doc named "Project Proposal" and click the "Import" button.
-*   **The Result:** Lexus instantly creates a new note in your Notes view titled "Imported: Project Proposal." The note's content is the full text of your Google Doc, with formatting preserved.
+*   **The Result:** LEXUS instantly creates a new note in your Notes view titled "Imported: Project Proposal." The note's content is the full text of your Google Doc, with formatting preserved.
 
 ---
 
 ## 4. The AI Assistant: Your Central Command
 
-The AI Assistant in the right sidebar is the most powerful way to use Lexus. It understands natural language and can execute commands across the entire app using a technology called "function calling."
+The AI Assistant in the right sidebar is the most powerful way to use LEXUS. It understands natural language and can execute commands across the entire app using a technology called "function calling."
 
 #### **Example Workflows:**
 
@@ -135,9 +135,9 @@ This feature lets you find information across *all* your notes instantly.
 
 ## 6. Data & Privacy Management Workflow
 
-Lexus gives you full control over your data.
+LEXUS gives you full control over your data.
 
 -   **The Backup Flow:** At any time, you can go to the Dashboard, navigate to **Settings**, and click **"Export All Data"**. This will download a single, human-readable JSON file to your computer containing everything—all your notes, tasks, habits, settings, etc.
 
--   **The Restore Flow:** If you get a new computer, you can open Lexus, go to Settings, click **"Import Data,"** and select your backup file. The application will reload, and your entire workspace will be restored exactly as you left it.
+-   **The Restore Flow:** If you get a new computer, you can open LEXUS, go to Settings, click **"Import Data,"** and select your backup file. The application will reload, and your entire workspace will be restored exactly as you left it.
 -   **Wiping Data:** In the "Danger Zone" of the settings, you can choose to wipe all local data, securely deleting everything from your browser.

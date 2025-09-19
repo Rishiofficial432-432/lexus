@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { BrainCircuitIcon, CommandIcon, FileTextIcon, LanguagesIcon, ListTodoIcon, MessageSquareQuoteIcon, PlusIcon, TrashIcon, XIcon, ImageIcon } from './Icons';
+import { Plus, Trash2, Image as ImageIcon, Languages, ListTodo, MessageSquareQuote, BrainCircuit, FileText, Command, X } from 'lucide-react';
 import { Bold, Italic, Underline, Strikethrough, Heading1, Heading2, List, ListOrdered } from 'lucide-react';
 import { geminiAI } from './gemini';
 
@@ -73,25 +73,25 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, text, 
   };
 
     const commands: Command[] = useMemo(() => [
-        { name: 'New Page', section: 'General', icon: <PlusIcon className="w-5 h-5"/>, action: () => { onClose(); onNewPage(); } },
-        { name: 'Delete Page', section: 'General', icon: <TrashIcon className="w-5 h-5"/>, action: () => { onClose(); onDeletePage(); } },
-        { name: 'Insert Image', section: 'General', icon: <ImageIcon className="w-5 h-5"/>, action: () => { onClose(); onInsertImage(); } },
+        { name: 'New Page', section: 'General', icon: <Plus size={18}/>, action: () => { onClose(); onNewPage(); } },
+        { name: 'Delete Page', section: 'General', icon: <Trash2 size={18}/>, action: () => { onClose(); onDeletePage(); } },
+        { name: 'Insert Image', section: 'General', icon: <ImageIcon size={18}/>, action: () => { onClose(); onInsertImage(); } },
         
-        { name: 'Bold', section: 'Formatting', icon: <Bold size={20}/>, action: () => { onClose(); onFormat('bold'); } },
-        { name: 'Italic', section: 'Formatting', icon: <Italic size={20}/>, action: () => { onClose(); onFormat('italic'); } },
-        { name: 'Underline', section: 'Formatting', icon: <Underline size={20}/>, action: () => { onClose(); onFormat('underline'); } },
-        { name: 'Strikethrough', section: 'Formatting', icon: <Strikethrough size={20}/>, action: () => { onClose(); onFormat('strikeThrough'); } },
-        { name: 'Heading 1', section: 'Formatting', icon: <Heading1 size={20}/>, action: () => { onClose(); onFormat('formatBlock', '<h1>'); } },
-        { name: 'Heading 2', section: 'Formatting', icon: <Heading2 size={20}/>, action: () => { onClose(); onFormat('formatBlock', '<h2>'); } },
-        { name: 'Bulleted List', section: 'Formatting', icon: <List size={20}/>, action: () => { onClose(); onFormat('insertUnorderedList'); } },
-        { name: 'Numbered List', section: 'Formatting', icon: <ListOrdered size={20}/>, action: () => { onClose(); onFormat('insertOrderedList'); } },
+        { name: 'Bold', section: 'Formatting', icon: <Bold size={18}/>, action: () => { onClose(); onFormat('bold'); } },
+        { name: 'Italic', section: 'Formatting', icon: <Italic size={18}/>, action: () => { onClose(); onFormat('italic'); } },
+        { name: 'Underline', section: 'Formatting', icon: <Underline size={18}/>, action: () => { onClose(); onFormat('underline'); } },
+        { name: 'Strikethrough', section: 'Formatting', icon: <Strikethrough size={18}/>, action: () => { onClose(); onFormat('strikeThrough'); } },
+        { name: 'Heading 1', section: 'Formatting', icon: <Heading1 size={18}/>, action: () => { onClose(); onFormat('formatBlock', '<h1>'); } },
+        { name: 'Heading 2', section: 'Formatting', icon: <Heading2 size={18}/>, action: () => { onClose(); onFormat('formatBlock', '<h2>'); } },
+        { name: 'Bulleted List', section: 'Formatting', icon: <List size={18}/>, action: () => { onClose(); onFormat('insertUnorderedList'); } },
+        { name: 'Numbered List', section: 'Formatting', icon: <ListOrdered size={18}/>, action: () => { onClose(); onFormat('insertOrderedList'); } },
         
-        { name: 'Summarize', section: 'AI', icon: <FileTextIcon className="w-5 h-5"/>, action: () => {}, template: t => `Summarize the following text concisely:\n\n${t}` },
-        { name: 'Improve Writing', section: 'AI', icon: <BrainCircuitIcon className="w-5 h-5"/>, action: () => {}, template: t => `Improve the writing of the following text. Fix any grammar or spelling mistakes, and make it more clear and professional:\n\n${t}` },
-        { name: 'Brainstorm Ideas', section: 'AI', icon: <BrainCircuitIcon className="w-5 h-5"/>, action: () => {}, template: t => `Brainstorm a list of 3-5 related ideas based on the following text. If the text is empty, brainstorm ideas about productivity. Format the output as a bulleted list:\n\n${t}` },
-        { name: 'Find Action Items', section: 'AI', icon: <ListTodoIcon className="w-5 h-5"/>, action: () => {}, template: t => `Extract any action items or tasks from the following text. Format as a checklist:\n\n${t}` },
-        { name: 'Translate to Spanish', section: 'AI', icon: <LanguagesIcon className="w-5 h-5"/>, action: () => {}, template: t => `Translate the following text to Spanish:\n\n${t}` },
-        { name: 'Change Tone to Formal', section: 'AI', icon: <MessageSquareQuoteIcon className="w-5 h-5"/>, action: () => {}, template: t => `Rewrite the following text in a more formal tone:\n\n${t}` },
+        { name: 'Summarize', section: 'AI', icon: <FileText size={18}/>, action: () => {}, template: t => `Summarize the following text concisely:\n\n${t}` },
+        { name: 'Improve Writing', section: 'AI', icon: <BrainCircuit size={18}/>, action: () => {}, template: t => `Improve the writing of the following text. Fix any grammar or spelling mistakes, and make it more clear and professional:\n\n${t}` },
+        { name: 'Brainstorm Ideas', section: 'AI', icon: <BrainCircuit size={18}/>, action: () => {}, template: t => `Brainstorm a list of 3-5 related ideas based on the following text. If the text is empty, brainstorm ideas about productivity. Format the output as a bulleted list:\n\n${t}` },
+        { name: 'Find Action Items', section: 'AI', icon: <ListTodo size={18}/>, action: () => {}, template: t => `Extract any action items or tasks from the following text. Format as a checklist:\n\n${t}` },
+        { name: 'Translate to Spanish', section: 'AI', icon: <Languages size={18}/>, action: () => {}, template: t => `Translate the following text to Spanish:\n\n${t}` },
+        { name: 'Change Tone to Formal', section: 'AI', icon: <MessageSquareQuote size={18}/>, action: () => {}, template: t => `Rewrite the following text in a more formal tone:\n\n${t}` },
   ], [onNewPage, onDeletePage, onClose, onFormat, onInsertImage]);
   
   const filteredCommands = useMemo(() => {
@@ -151,7 +151,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, text, 
       if (sectionCommands.length === 0) return null;
       return (
           <div>
-              <h3 className="text-xs text-muted-foreground font-medium px-3 pt-4 pb-2">{section}</h3>
+              <h3 className="text-xs text-muted-foreground font-semibold tracking-wider px-3 pt-4 pb-2 uppercase">{section}</h3>
               <ul className="space-y-1">
                   {sectionCommands.map(cmd => {
                       const globalIndex = filteredCommands.findIndex(c => c.name === cmd.name && c.section === cmd.section);
@@ -160,7 +160,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, text, 
                         <li key={cmd.name}>
                             <button
                                 onClick={() => executeCommand(cmd)}
-                                className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm text-left rounded-md transition-colors ${
+                                className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left rounded-md transition-colors ${
                                     isActive
                                         ? 'bg-primary text-primary-foreground'
                                         : 'text-foreground/80 hover:bg-accent'
@@ -185,13 +185,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, text, 
       onClick={onClose}
     >
       <div
-        className={`bg-popover border border-border rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 ${
+        className={`bg-popover border border-border rounded-lg shadow-2xl w-full max-w-lg transform transition-all duration-300 ${
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 p-3 border-b border-border">
-          <CommandIcon className="w-5 h-5 text-muted-foreground" />
+          <Command className="w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             value={searchTerm}
@@ -201,7 +201,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, text, 
             autoFocus
           />
           <button onClick={onClose} className="p-1 rounded-md hover:bg-accent">
-            <XIcon className="w-5 h-5 text-muted-foreground" />
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
         <div className="max-h-[400px] overflow-y-auto p-2">

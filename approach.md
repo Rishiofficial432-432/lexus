@@ -1,12 +1,12 @@
-# Lexus: In-Depth Technical Explanations
+# LEXUS: In-Depth Technical Explanations
 
-This document provides a detailed, precise explanation of each key feature within the Lexus application, breaking down the core logic and algorithms that power them.
+This document provides a detailed, precise explanation of each key feature within the LEXUS application, breaking down the core logic and algorithms that power them.
 
 ---
 
 ## 1. Core Architecture: Local-First & Privacy-First
 
-Lexus is architected as a **local-first application**. This is the most critical design choice, ensuring user privacy and full offline capability.
+LEXUS is architected as a **local-first application**. This is the most critical design choice, ensuring user privacy and full offline capability.
 
 -   **Data Storage:**
     -   **`localStorage`**: Used for storing smaller, structured data like tasks, journal entries, settings, and other widget states. Data is serialized to JSON strings for storage.
@@ -34,7 +34,7 @@ This approach is performant (no network latency), simple, reliable, and works en
 
 ## 3. AI Feature Implementations
 
-Lexus's intelligence layer is powered by **Google's `gemini-2.5-flash` model**.
+LEXUS's intelligence layer is powered by **Google's `gemini-2.5-flash` model**.
 
 ### AI Brain Dump Logic
 

@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lexus</title>
+    <title>LEXUS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,30 +22,53 @@
       };
     </script>
     <style>
-      /* Default Theme: Dark */
+      /* NEW THEME: DARK (Default) */
       :root, .theme-dark {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 185 80% 55%; /* New Cyan */
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 185 80% 55%; /* New Cyan */
-        --radius: 0.75rem;
+        --background: 224 71% 4%; /* very dark blue */
+        --foreground: 210 40% 98%;
+        --card: 224 71% 6%;
+        --card-foreground: 210 40% 98%;
+        --popover: 224 71% 4%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 185 97% 48%; /* electric cyan */
+        --primary-foreground: 210 40% 98%;
+        --secondary: 215 28% 17%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 215 28% 17%;
+        --muted-foreground: 215 28% 67%;
+        --accent: 215 28% 17%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 215 28% 17%;
+        --input: 215 28% 13%;
+        --ring: 185 97% 48%;
+        --radius: 0.5rem; /* Slightly less rounded */
       }
 
+      .theme-light {
+        --background: 0 0% 100%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 185 97% 48%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222 47% 11%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215 20% 65%;
+        --accent: 210 40% 96%;
+        --accent-foreground: 222 47% 11%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214 32% 91%;
+        --input: 214 32% 91%;
+        --ring: 185 97% 48%;
+      }
+
+      /* Deprecated themes, kept for compatibility */
       .theme-jetblack {
           --background: 0 0% 0%;
           --card: 240 5% 5%;
@@ -55,38 +78,16 @@
           --accent: 240 5% 8%;
           --border: 240 5% 12%;
           --input: 240 5% 12%;
+          --primary: 185 97% 48%;
       }
-
-      .theme-light {
-          --background: 0 0% 100%;
-          --foreground: 240 10% 3.9%;
-          --card: 0 0% 100%;
-          --card-foreground: 240 10% 3.9%;
-          --popover: 0 0% 100%;
-          --popover-foreground: 240 10% 3.9%;
-          /* Primary is same as dark */
-          --primary-foreground: 185 80% 10%; /* Dark cyan for contrast */
-          --secondary: 240 4.8% 95.9%;
-          --secondary-foreground: 240 5.9% 10%;
-          --muted: 240 4.8% 95.9%;
-          --muted-foreground: 240 3.8% 46.1%;
-          --accent: 240 4.8% 95.9%;
-          --accent-foreground: 240 5.9% 10%;
-          --destructive: 0 84.2% 60.2%;
-          --destructive-foreground: 0 0% 98%;
-          --border: 240 5.9% 90%;
-          --input: 240 5.9% 90%;
-          --ring: 185 80% 55%; /* New Cyan */
-      }
-
       .theme-midlight {
-          --background: 40 33% 94%; /* A soft, off-white with a hint of warmth */
+          --background: 40 33% 94%;
           --foreground: 20 15% 25%;
           --card: 40 50% 91%;
           --card-foreground: 20 15% 25%;
           --popover: 40 33% 94%;
           --popover-foreground: 20 15% 25%;
-          --primary: 185 80% 55%; /* New Cyan */
+          --primary: 185 97% 48%;
           --primary-foreground: 0 0% 100%;
           --secondary: 40 30% 88%;
           --secondary-foreground: 20 12% 35%;
@@ -98,9 +99,8 @@
           --destructive-foreground: 0 0% 100%;
           --border: 40 25% 80%;
           --input: 40 25% 80%;
-          --ring: 185 80% 55%; /* New Cyan */
+          --ring: 185 97% 48%;
       }
-
       .theme-midnight {
         --background: 220 13% 10%;
         --foreground: 210 20% 98%;
@@ -108,8 +108,8 @@
         --card-foreground: 210 20% 98%;
         --popover: 220 13% 14%;
         --popover-foreground: 210 20% 98%;
-        --primary: 185 90% 60%; /* New Cyan */
-        --primary-foreground: 185 20% 10%;
+        --primary: 185 97% 48%;
+        --primary-foreground: 210 40% 98%;
         --secondary: 220 13% 18%;
         --secondary-foreground: 210 20% 98%;
         --muted: 220 13% 18%;
@@ -120,7 +120,7 @@
         --destructive-foreground: 0 0% 100%;
         --border: 220 13% 22%;
         --input: 220 13% 26%;
-        --ring: 185 90% 60%; /* New Cyan */
+        --ring: 185 97% 48%;
       }
 
       body {
@@ -148,16 +148,15 @@
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: rgba(20,20,22,0.5);
+        background: hsla(var(--background), 0.5);
       }
       ::-webkit-scrollbar-thumb {
-        background: #404040;
+        background: hsl(var(--border));
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #525252;
+        background: hsl(var(--secondary));
       }
-      /* Styles for the new rich content editor */
       [contenteditable][placeholder]:empty:before {
         content: attr(placeholder);
         color: hsl(var(--muted-foreground));
@@ -173,7 +172,7 @@
         transition: box-shadow 0.2s ease;
       }
        .editor-content img:hover {
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 15px hsla(var(--primary), 0.2);
       }
       .editor-content iframe {
         max-width: 100%;

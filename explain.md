@@ -1,22 +1,23 @@
 
-# Lexus: A Deep Dive into Your Intelligent Workspace
 
-This document provides a comprehensive, top-to-bottom explanation of the Lexus application. It covers the core philosophy, the application's features, and detailed walkthroughs of each workflow, from creating a simple note to generating a complex academic timetable.
+# LEXUS: A Deep Dive into Your Intelligent Workspace
+
+This document provides a comprehensive, top-to-bottom explanation of the LEXUS application. It covers the core philosophy, the application's features, and detailed walkthroughs of each workflow, from creating a simple note to generating a complex academic timetable.
 
 ---
 
 ## 1. The Core Philosophy: Your Data, Your Device
 
-Before diving into the features, it's essential to understand what makes Lexus different. It is a **local-first** and **privacy-first** application.
+Before diving into the features, it's essential to understand what makes LEXUS different. It is a **local-first** and **privacy-first** application.
 
 -   **What this means for you:** All your information—every note, task, journal entry, and setting—is stored directly on your computer's hard drive, within your web browser's secure storage (`localStorage` for text data and `IndexedDB` for larger files like note banners). Your data never leaves your device unless you explicitly use an AI feature (which sends only that specific request to Google's servers), the Google Workspace integration, or the optional Student/Teacher Portal.
 -   **The benefits:** You have absolute ownership and privacy. The app works perfectly offline, and there are no accounts or sign-ups required. The one exception to this is the optional Student/Teacher Portal, which requires a cloud database (Supabase) to function, but this is a self-contained module that you control.
 
 ---
 
-## 2. The Minimum Viable Product (MVP) - The Core of Lexus
+## 2. The Minimum Viable Product (MVP) - The Core of LEXUS
 
-The core value proposition of Lexus is to provide a **private, unified space to capture, organize, and act on your thoughts.** The MVP focuses on delivering this value in the most direct way possible, establishing the foundation upon which all other features are built.
+The core value proposition of LEXUS is to provide a **private, unified space to capture, organize, and act on your thoughts.** The MVP focuses on delivering this value in the most direct way possible, establishing the foundation upon which all other features are built.
 
 ### Feature 1: The Note-Taking Engine
 
@@ -28,7 +29,7 @@ To fulfill the "organize and act" part of the value proposition, the MVP include
 
 ### Feature 3: The Intelligent Command Layer (AI Assistant)
 
-This feature establishes the "intelligent" and "unified" aspects of Lexus from day one. The MVP includes the chat interface on the right side of the screen. Its core purpose is to act as a "do-engine." A user can type a command like *"add a task to buy milk"* or *"create a new note about my project ideas."* The AI understands the intent and directly performs the action—adding the task to the Task widget or creating a new, empty note—without the user needing to navigate to the respective modules. This showcases the seamless, command-driven workflow that is central to the Lexus experience.
+This feature establishes the "intelligent" and "unified" aspects of LEXUS from day one. The MVP includes the chat interface on the right side of the screen. Its core purpose is to act as a "do-engine." A user can type a command like *"add a task to buy milk"* or *"create a new note about my project ideas."* The AI understands the intent and directly performs the action—adding the task to the Task widget or creating a new, empty note—without the user needing to navigate to the respective modules. This showcases the seamless, command-driven workflow that is central to the LEXUS experience.
 
 ### Feature 4: The Power Switch (Settings)
 
@@ -36,15 +37,15 @@ To enable the AI, the user needs to provide their own API key. The MVP includes 
 
 ---
 
-## 3. The Full Lexus Experience - A Comprehensive Tour
+## 3. The Full LEXUS Experience - A Comprehensive Tour
 
-The current version of Lexus has evolved far beyond the MVP, integrating over 15 distinct features into a cohesive whole.
+The current version of LEXUS has evolved far beyond the MVP, integrating over 15 distinct features into a cohesive whole.
 
 ### The Main Interface: Your Three Control Panels
 
 The application is divided into three distinct vertical sections:
 
-1.  **The Left Sidebar (Navigation):** This is how you move between the major sections of the app: the **Dashboard**, **Academics Hub**, **Notes**, **Journal**, and **DocuMind**, among others.
+1.  **The Left Sidebar (Navigation):** This is how you move between the major sections of the app: the **Dashboard**, **Academics Hub**, **Notes**, **Journal**, and **VisualMind**, among others.
 2.  **The Center Content Area (Your Workspace):** This is the largest section and is where you do your work.
 3.  **The Right Sidebar (The AI Assistant):** Your intelligent command center for controlling the entire application.
 
@@ -52,7 +53,7 @@ The application is divided into three distinct vertical sections:
 
 The Dashboard is a collection of powerful widgets for managing your day-to-day life.
 
--   **AI Brain Dump:** This is for turning chaotic thoughts into organized actions. You can type or paste a block of unstructured text (e.g., *"remind me to call John tomorrow at 2pm, buy groceries, also I had an idea for a new blog post"*). The AI processes this and suggests categorized items: a calendar event, a task, and a new note idea. You can then approve these suggestions, and Lexus will automatically add them to the correct places in the app.
+-   **AI Brain Dump:** This is for turning chaotic thoughts into organized actions. You can type or paste a block of unstructured text (e.g., *"remind me to call John tomorrow at 2pm, buy groceries, also I had an idea for a new blog post"*). The AI processes this and suggests categorized items: a calendar event, a task, and a new note idea. You can then approve these suggestions, and LEXUS will automatically add them to the correct places in the app.
 -   **Tasks & Kanban Board:** Beyond a simple to-do list, the Kanban board allows you to visualize your workflow. You can create cards in a "To Do" column and drag them to "In Progress" and "Done" as you work on them.
 -   **Calendar & Quick Notes:** The Calendar allows you to schedule events, while Quick Notes is a simple scratchpad for fleeting thoughts that don't need a full, separate note page.
 -   **Pomodoro Timer & Habit Tracker:** Use the Pomodoro timer to work in focused 25-minute bursts. The Habit Tracker lets you add habits (e.g., "Read for 15 minutes") and mark them off daily to build a streak.
@@ -66,9 +67,9 @@ This is your primary space for writing. You can create an unlimited number of no
 
 This view provides a dedicated space for daily reflection. It features a calendar on the left and a writing area on the right. You can click on any date to create or view an entry for that day. Dates with existing entries are marked, giving you a visual overview of your journaling consistency.
 
-### Module 4: DocuMind - Your Visual Explorer
+### Module 4: VisualMind - Your Visual Explorer
 
-This innovative tool turns static documents into dynamic, interactive mind maps. You upload a document (like a PDF research paper or a Word document with meeting notes), and Lexus automatically generates a mind map where the main topics are central nodes and sub-topics are connected branches. You can then explore this map visually, and clicking on any node prompts the AI to provide a concise explanation of that concept based on the document's content.
+This innovative tool turns static documents into dynamic, interactive mind maps. You upload a document (like a PDF research paper or a Word document with meeting notes), and LEXUS automatically generates a mind map where the main topics are central nodes and sub-topics are connected branches. You can then explore this map visually, and clicking on any node prompts the AI to provide a concise explanation of that concept based on the document's content.
 
 ### Module 5: The Academics Hub - The Educational Core
 
@@ -87,7 +88,7 @@ This is the central place for all academic and learning-related tools.
 
 ### Module 6: Google Workspace & External Connections
 
-You can securely connect your Google account to Lexus. Once connected, you can search your Google Drive from within the app. When you find a Google Doc or Sheet you want to import, a single click will create a new note in Lexus containing the full content of that file, preserving its formatting.
+You can securely connect your Google account to LEXUS. Once connected, you can search your Google Drive from within the app. When you find a Google Doc or Sheet you want to import, a single click will create a new note in LEXUS containing the full content of that file, preserving its formatting.
 
 ### Global Intelligence: Features That Work Everywhere
 
@@ -97,6 +98,6 @@ You can securely connect your Google account to Lexus. Once connected, you can s
 
 ---
 
-## 4. Conclusion: The Lexus Philosophy in Practice
+## 4. Conclusion: The LEXUS Philosophy in Practice
 
-Lexus brings together over a dozen powerful tools into a single, cohesive application. By starting with a core of capturing and organizing thoughts, and then layering on intelligent, action-oriented features, it creates a workspace that is both powerful and deeply personal. Its unwavering commitment to local-first data ensures that this powerful space is also completely private and secure.
+LEXUS brings together over a dozen powerful tools into a single, cohesive application. By starting with a core of capturing and organizing thoughts, and then layering on intelligent, action-oriented features, it creates a workspace that is both powerful and deeply personal. Its unwavering commitment to local-first data ensures that this powerful space is also completely private and secure.

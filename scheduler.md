@@ -1,6 +1,6 @@
-# Lexus's AI Timetable Scheduler: A Technical Explanation
+# LEXUS's AI Timetable Scheduler: A Technical Explanation
 
-This document provides an in-depth look at the AI Timetable Scheduler feature within the Lexus application. It covers its core purpose, the logic behind its features, and defines what constitutes a Minimum Viable Product (MVP) for this module.
+This document provides an in-depth look at the AI Timetable Scheduler feature within the LEXUS application. It covers its core purpose, the logic behind its features, and defines what constitutes a Minimum Viable Product (MVP) for this module.
 
 ---
 
@@ -19,7 +19,7 @@ Manually creating a timetable is a significant administrative challenge. An admi
 
 Doing this by hand for an entire department or school is a logistical puzzle that can take days or weeks to solve and is highly susceptible to human error, resulting in conflicts and inefficiencies.
 
-### The Solution Lexus Provides
+### The Solution LEXUS Provides
 
 The scheduler replaces this manual process with a deterministic algorithm. The administrator provides the raw data and constraints (teachers, subjects, classes, and rooms), and the scheduler's engine processes this information to generate a complete, conflict-free timetable in a matter of seconds.
 

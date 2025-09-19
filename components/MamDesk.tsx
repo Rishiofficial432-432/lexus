@@ -61,7 +61,7 @@ const AIBrainDump: React.FC<AIBrainDumpProps> = ({ onAddTask, onAddEvent, onAddQ
         setResult(null);
 
         const today = new Date().toISOString().split('T')[0];
-        const prompt = `You are an automated text processing engine for an app called Maven. Analyze the following unstructured text, which is a 'brain dump' from a user. Your sole function is to extract actionable items and categorize them according to the provided JSON schema.
+        const prompt = `You are an automated text processing engine for an app called LEXUS. Analyze the following unstructured text, which is a 'brain dump' from a user. Your sole function is to extract actionable items and categorize them according to the provided JSON schema.
 
 - Identify specific to-do items and list them as tasks.
 - Identify calendar events. Infer dates and times where possible. If a specific date isn't mentioned (e.g., "tomorrow", "next Wednesday"), calculate the date based on today's date, which is ${today}. If no time is mentioned, use a sensible default like "12:00". Format dates as YYYY-MM-DD and times as HH:MM (24-hour).

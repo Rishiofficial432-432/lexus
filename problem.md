@@ -1,6 +1,6 @@
 # The Problem Solved by the Student/Teacher Portal
 
-The Student/Teacher Portal within Lexus is designed to solve a critical and often overlooked set of problems in educational environments: the administrative friction, lack of security, and communication gaps inherent in traditional classroom management. It addresses the distinct but interconnected challenges faced by both educators and students, replacing outdated manual processes with a streamlined, secure, and integrated digital solution.
+The Student/Teacher Portal within LEXUS is designed to solve a critical and often overlooked set of problems in educational environments: the administrative friction, lack of security, and communication gaps inherent in traditional classroom management. It addresses the distinct but interconnected challenges faced by both educators and students, replacing outdated manual processes with a streamlined, secure, and integrated digital solution.
 
 ---
 
@@ -75,15 +75,15 @@ From a student's perspective, the traditional attendance process can be ambiguou
 
 ---
 
-## How Lexus Solves This Problem
+## How LEXUS Solves This Problem
 
-The Student/Teacher Portal in Lexus is a purpose-built solution that directly addresses every challenge outlined above, creating a modern, secure, and efficient ecosystem for classroom management.
+The Student/Teacher Portal in LEXUS is a purpose-built solution that directly addresses every challenge outlined above, creating a modern, secure, and efficient ecosystem for classroom management.
 
 -   **Solving Manual Inefficiency:** The portal replaces paper and roll calls with a fast, digital check-in process. Teachers start a session with a single click, and students check in instantly, saving valuable class time. The **Live Attendance Dashboard** provides the real-time view that educators lack with manual systems.
 
 -   **Ensuring Attendance Integrity:** The core problem of "buddy punching" is solved by the **Location-Aware Attendance** feature. When enabled, the system uses the student's device GPS to verify they are physically within a set radius of the classroom, making it impossible for an absent student to be marked present by a friend.
 
--   **Providing Actionable Insights:** Lexus's portal moves beyond simple record-keeping. The **Analytics Dashboard** automatically calculates attendance rates for the entire class and for each individual student. This empowers educators to instantly identify students with declining attendance who may be at risk, fulfilling a critical need for data-driven student support.
+-   **Providing Actionable Insights:** LEXUS's portal moves beyond simple record-keeping. The **Analytics Dashboard** automatically calculates attendance rates for the entire class and for each individual student. This empowers educators to instantly identify students with declining attendance who may be at risk, fulfilling a critical need for data-driven student support.
 
 -   **Unifying Planning and Communication:** The integrated **Curriculum Log** solves the problem of disconnected information. Teachers can log the day's topic and activities directly within the portal. Students see this information right alongside their check-in confirmation, creating a single source of truth for the day's session and helping absent students catch up easily.
 
